@@ -1,19 +1,19 @@
 class Square:
     def __init__(self,
                  state,
-                 colorinside, 
-                 coloroutline):
+                 color_inside, 
+                 color_outline):
         self._state = self  
-        self._colorinside = colorinside     #color of the square
-        self._coloroutline = coloroutline   #color of the outline of the square
+        self._color_inside = color_inside     #color of the square
+        self._color_outline = color_outline   #color of the outline of the square
 
     @property
-    def coloroutline(self):
-        return self._coloroutline
+    def color_outline(self):
+        return self._color_outline
     
     @property
-    def colorinside(self):
-        return self._colorinside
+    def color_inside(self):
+        return self._color_inside
     
     @property
     def state(self):
@@ -21,12 +21,12 @@ class Square:
     
 
 class SmallSquare(Square):
-    def __init__(self, state, colorinside, coloroutline):
-        super().__init__(state, colorinside, coloroutline)
+    def __init__(self, state, color_inside, color_outline):
+        super().__init__(state, color_inside, color_outline)
         
 
 
 class BigSquare(Square):
-    def __init__(self, state, colorinside, coloroutline):
-        super().__init__(state, colorinside, coloroutline)
+    def __init__(self, state, color_inside, color_outline):
+        super().__init__(state, color_inside, color_outline)
 
