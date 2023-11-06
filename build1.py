@@ -37,7 +37,7 @@ while execute == True:
             pygame.draw.rect(window, black, 
                              (column * window.get_width() // columns, line * window.get_height() // lines, window.get_width() // columns, window.get_height() // lines), 1)
             if line % 3 == 0 and line > 0:
-                pygame.draw.line(window, red, (0, line * (window.get_width() // lines)), 
+                pygame.draw.line(window, red, (0, line * (window.get_height() // lines)), 
                                  (window.get_width(), line * (window.get_height() // lines)), bigSquaresThickness)
             if column % 3 == 0 and column > 0:
                 pygame.draw.line(window, red, (column * (window.get_width() // columns), 0),
