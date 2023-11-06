@@ -18,7 +18,7 @@ class Square:
     @property
     def state(self):
         return self._state
-    
+
 
 class SmallSquare(Square):
     def __init__(self, state, color_inside, color_outline):
