@@ -17,7 +17,7 @@ black = (0,0,0)
 
 #Pop the window up
 window = pygame.display.set_mode((length, height))
-pygame.display.set_caption("Jeu de nom à définir")
+pygame.display.set_caption("Méta-Morpion")
 
 execute = True
 
