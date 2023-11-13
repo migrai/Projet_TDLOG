@@ -38,10 +38,10 @@ while execute == True:
                 window,
                 black,
                 (
-                    column * window.get_width() // columns,
-                    line * window.get_height() // lines,
-                    window.get_width() // columns,
-                    window.get_height() // lines,
+                    column * window.get_width() / columns,
+                    line * window.get_height() / lines,
+                    window.get_width() / columns,
+                    window.get_height() / lines,
                 ),
                 1,
             )
@@ -49,16 +49,16 @@ while execute == True:
                 pygame.draw.line(
                     window,
                     red,
-                    (0, line * (window.get_height() // lines)),
-                    (window.get_width(), line * (window.get_height() // lines)),
+                    (0, line * (window.get_height() / lines)),
+                    (window.get_width(), line * (window.get_height() / lines)),
                     bigSquaresThickness,
                 )
             if column % 3 == 0 and column > 0:
                 pygame.draw.line(
                     window,
                     red,
-                    (column * (window.get_width() // columns), 0),
-                    (column * (window.get_width() // columns), window.get_height()),
+                    (column * (window.get_width() / columns), 0),
+                    (column * (window.get_width() / columns), window.get_height()),
                     bigSquaresThickness,
                 )
 
