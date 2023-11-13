@@ -19,7 +19,7 @@ class Board(QWidget):
                           [None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],]
+                          [None, None, None, None, None, None, None, None, None]]
 
         # Create the buttons and add them to the matrix
         for i in range(9):

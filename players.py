@@ -11,7 +11,7 @@ class Player:
     def color(self):
         return self._color
     
-class Humanplayer(Player):
+class HumanPlayer(Player):
     """ A human player has one extra attribute, their name. 
     they will choose their move using the mouse"""
     def __init__(self,name,color):
