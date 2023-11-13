@@ -14,7 +14,7 @@ class Player:
 class HumanPlayer(Player):
     """ A human player has one extra attribute, their name. 
     they will choose their move using the mouse"""
-    def __init__(self,name,color):
+    def __init__(self, name, color):
         assert name.strip() != "", "invalid name"      
         super().__init__(color)
         self._name = name
@@ -22,5 +22,11 @@ class HumanPlayer(Player):
     @property
     def name(self):
         return self._name
-    
 
+class RandomPlayer(Player):
+    def __init__(self, color):
+        super().__init__(color)
+
+class MachinePlayer(Player):
+    def __init__(self, color):
+        super().__init__(color)
