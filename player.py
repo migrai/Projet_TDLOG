@@ -1,11 +1,11 @@
 class Player:
-    """A player have :
+    """A player has :
       a colour
-      a attribute if it is his turn to play 
+      an attribute if it is his turn to play 
     """
-    def __init__(self
+    def __init__(self,
                  color):
-        self._color = color 
+        self._color = color
 
     @property
     def color(self):
