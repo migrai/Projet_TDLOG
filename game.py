@@ -42,9 +42,24 @@ class Game:
                 for j in range (len(board.tabuleiro)):
                     index_possible_squares.append([i,j])
         else:
-
         return 0
     
+    def check_square (self) : #fonction qui vérifie si le dernier coup du joueur gagne une grande case
+        # si le coup n'a pas permis de gagner la case elle retourne False, sinon elle retourne le symbole du joueur soit "x" ou "o"
+        x = self.last_square.x//3
+        y = self.last_square.y//3
+        for i in range (3):
+            if self.table[3*x+i][3*y]==self.table[3*x+i][3*y+1]==self.table[3*x+i][3*y+2] : 
+                return self.table[self.last_square.x][self.last_square.y]
+            if self.table[3*x][3*y+i]==self.table[3*x+1][3*y+i]==self.table[3*x+2][3*y+i] : 
+                return self.table[self.last_square.x][self.last_square.y]
+        if self.table[3*x][3*y]==self.table[3*x+1][3*y+1]==self.table[3*x+2][3*y+2] : 
+            return self.table[self.last_square.x][self.last_square.y]
+        if self.table[3*x+2][3*y]==self.table[3*x+1][3*y+1]==self.table[3*x][3*y+2] : 
+            return self.table[self.last_square.x][self.last_square.y]
+        else : 
+            return False
+        
     self.tabuleiro = [[None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None],
@@ -54,3 +69,4 @@ class Game:
                           [None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None],
                           [None, None, None, None, None, None, None, None, None]]
+
