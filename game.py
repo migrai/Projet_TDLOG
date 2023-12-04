@@ -1,6 +1,7 @@
 import board
 import players
 import squares
+
 class Game:
     def __init__(self, player_dict):
         self._board = board.Board()
@@ -54,6 +55,7 @@ class Game:
                     for j in range(3):
                         if board.table[3*x+i][3*y+j] is None:  #check that small squares are unoccupied
                             list_possible_squares.append((3*x+i, 3*y+j))
+
             else:  # occupied big square : every square on the board is possible, as soon as the small square and its big square are unoccupied
                 for i_big in range(3):
                     for j_big in range(3):  # indices of big squares
