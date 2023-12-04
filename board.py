@@ -24,6 +24,8 @@ class Board(QWidget):
             [None, None, None, None, None, None, None, None, None],
         ]
 
+        self.resize(900,900)
+
         # Variable to track the current player (X or O)
         self.current_player = "X"
 
@@ -51,6 +53,19 @@ class Board(QWidget):
 
         self.setWindowTitle("Meta-Morpion")
         self.show()
+    # Ajoutez ces méthodes à votre classe Board
+
+    def disable_buttons(self, list_forbidden_squares):
+        # Désactiver les boutons aux coordonnées spécifiées
+        for row, col in list_forbidden_squares:
+            self.tabuleiro[row][col].setEnabled(False)
+
+    def enable_all_buttons(self):
+        # Réactiver tous les boutons
+        for row in range(9):
+            for col in range(9):
+                self.tabuleiro[row][col].setEnabled(True)
+
 
     def button_click(self, row, col):
         # Function to be called as the button is clicked
@@ -59,8 +74,14 @@ class Board(QWidget):
             self.tabuleiro[row][col].setStyleSheet(
                 f"background-color: {self.get_player_color()}"
             )
+            # Désactiver les boutons associés aux cases interdites
+            disabled_coordinates = self.get_disabled_coordinates()  # Mettez à jour cette fonction selon vos besoins
+            self.disable_buttons(disabled_coordinates)
 
-            # Toggle player
+            # Réactiver tous les boutons pour le prochain tour
+            self.enable_all_buttons()
+
+            # Basculer le joueur
             self.current_player = "O" if self.current_player == "X" else "X"
 
     def get_player_color(self):
@@ -70,6 +91,11 @@ class Board(QWidget):
     def get_block_color(self, row, col):
         # Return alternating colors for the blocks
         return "lightgray" if (row + col) % 2 == 0 else "gray"
+
+    def update_ui(self):
+        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
+        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
+        pass
 
 
 if __name__ == "__main__":

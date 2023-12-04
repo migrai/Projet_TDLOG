@@ -1,13 +1,15 @@
 import board
-import build1
 import players
 import squares
-class Game:
-    def __init__(self, board_path, player_dict):
-        self._board = board.initUI()
+
+class Game():
+    def __init__(self, player_dict):
+        self._board = board.Board()
+        self._big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
         self._current_player_index = 0
         self._number_of_moves = 0
         self._player_list = []
+        self._last_square_index = [-1,-1]
         num_players = len(player_dict)
         for player_color, player_name in player_dict.items():
             if player_name is None:
@@ -25,32 +27,132 @@ class Game:
     def board(self):
         return self._board
     @property
+    def big_square_table(self):
+        return self._big_square_table
+    @property
+    def last_square_index(self):
+        return self._last_square_index
+    @property
     def player_list(self):
         return self._player_list
     @property
     def current_player(self):
         return self._player_list[self._current_player_index]
     @property
-    def number_of_moves(self):
+    def number_of_moves(self): 
         return self._number_of_moves
     
-    def possible_squares_for_current_player(self):
-        player = self.current_player
+    def possible_squares_for_current_player(self):  # Returns a list of tuples of the possible moves
         index_possible_squares = []
-        if self.number_of_moves() == 0:
-            for i in range (len(board.tabuleiro)):
-                for j in range (len(board.tabuleiro)):
-                    index_possible_squares.append([i,j])
-        else:
-
-        return 0
+        if self.number_of_moves() == 0:  # 1st move of the game
+            for i in range(len(board.table)):
+                for j in range(len(board.table)):
+                    index_possible_squares.append((i, j))
+        else:  # normal move
+            x, y = self.last_square.x % 3, self.last_square.y % 3  # coords of the big square which last player points at
+            if self.big_square_table[x][y] is None:  # big square unoccupied
+                for i in range(3):
+                    for j in range(3):
+                        if board.table[3*x+i][3*y+j] is None:  #check that small squares are unoccupied
+                            index_possible_squares.append((3*x+i, 3*y+j))
+            else:  # occupied big square : every square on the board is possible, as soon as the small square and its big square are unoccupied
+                for i_big in range(3):
+                    for j_big in range(3):  # indices of big squares
+                        if self.big_square_table[i_big][j_big] is None:
+                            for i in range(3):
+                                for j in range(3):
+                                    if board.table[3*i_big+i][3*j_big+j] is None:
+                                        index_possible_squares.append((3*i_big+i, 3*j_big+j))
+        return index_possible_squares
     
-    self.tabuleiro = [[None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None],
-                          [None, None, None, None, None, None, None, None, None]]
+    def forbidden_moves_for_current_player(self):
+        return
+    
+    def check_ifsquarewon(self) :  #fonction qui vérifie si le dernier coup du joueur gagne une grande case
+        # si le coup n'a pas permis de gagner la case elle retourne False, sinon elle retourne le symbole du joueur soit "x" ou "o"
+        #doit modifier le big_square_table en ajoutant "x" ou "o" dans ce cas
+        x = self.last_square.x//3
+        y = self.last_square.y//3
+        for i in range(3):
+            if self.table[3*x+i][3*y]==self.table[3*x+i][3*y+1]==self.table[3*x+i][3*y+2] : 
+                return self.table[self.last_square.x][self.last_square.y]
+            if self.table[3*x][3*y+i]==self.table[3*x+1][3*y+i]==self.table[3*x+2][3*y+i] : 
+                return self.table[self.last_square.x][self.last_square.y]
+        if self.table[3*x][3*y]==self.table[3*x+1][3*y+1]==self.table[3*x+2][3*y+2] : 
+            return self.table[self.last_square.x][self.last_square.y]
+        if self.table[3*x+2][3*y]==self.table[3*x+1][3*y+1]==self.table[3*x][3*y+2] : 
+            return self.table[self.last_square.x][self.last_square.y]
+        else : 
+            return False
+        
+    #only used for testing the function (class game not working properly) 
+    def possible_squares_for_current_player(table,big_square_table,last_square,number_of_moves):
+            index_possible_squares = []
+            if number_of_moves == 0:  # 1st move of the game
+                for i in range(len(table)):
+                    for j in range(len(table)):
+                        index_possible_squares.append((i, j))
+            else:  # normal move
+                x, y = last_square[0] % 3, last_square[1] % 3  # coords of the big square which last player points at
+                if big_square_table[x][y] is None:  # big square unoccupied
+                    for i in range(3):
+                        for j in range(3):
+                            if table[3*x+i][3*y+j] is None:  #check that small squares are unoccupied
+                                index_possible_squares.append((3*x+i, 3*y+j))
+                else:  # occupied big square : every square on the board is possible, as soon as the small square and its big square are unoccupied
+                    for i_big in range(3):
+                        for j_big in range(3):  # indices of big squares
+                            if big_square_table[i_big][j_big] is None:
+                                for i in range(3):
+                                    for j in range(3):
+                                        if table[3*i_big+i][3*j_big+j] is None:
+                                            index_possible_squares.append((3*i_big+i, 3*j_big+j))
+            return index_possible_squares  
+    
+    def check_win(self, big_board_state): #fonction qui dit s'il y a un gagnant DU JEU et si oui quel joueur
+        # Vérifiez si un joueur a gagné horizontalement, verticalement ou en diagonale dans les grandes cases
+        players = ['X', 'O']
+        for player in players:
+            for i in range(3):
+                # Vérification horizontale
+                if (
+                    big_board_state[i * 3] == big_board_state[i * 3 + 1] == big_board_state[i * 3 + 2] == player
+                    and big_board_state[i * 3] is not None
+                ):
+                    return player
+                # Vérification verticale
+                if (
+                    big_board_state[i] == big_board_state[i + 3] == big_board_state[i + 6] == player
+                    and big_board_state[i] is not None
+                ):
+                    return player
+                # Vérification diagonale
+                if (
+                    big_board_state[0] == big_board_state[4] == big_board_state[8] == player
+                    and big_board_state[0] is not None
+                ) or (
+                    big_board_state[2] == big_board_state[4] == big_board_state[6] == player
+                    and big_board_state[2] is not None
+                ):
+                    return player #on renvoit le grand gagnant
+        return None  # Aucun gagnant pour le moment
+
+
+'''
+TEST check_win
+'''
+
+# # Exemple d'utilisation
+# game = Game()
+
+# # Définissez manuellement l'état des grandes cases pour un exemple de test
+# example_big_board_state = ['O', None, 'X', 'O', 'X', 'O', 'O', None, 'X']
+
+# # Testez la fonction check_win
+# winner = game.check_win(example_big_board_state)
+
+# # Affichez le résultat
+# if winner:
+#     print(f"Le joueur {winner} a gagné.")
+# else:
+#     print("Aucun gagnant pour le moment.")
