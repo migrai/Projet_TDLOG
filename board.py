@@ -1,5 +1,18 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QSizePolicy, QVBoxLayout, QMainWindow, QApplication, QDesktopWidget
+from PyQt5.QtWidgets import (
+    QApplication,
+    QWidget,
+    QPushButton,
+    QGridLayout,
+    QSizePolicy,
+    QVBoxLayout,
+    QMainWindow,
+    QApplication,
+    QDesktopWidget,
+    QMenuBar,
+    QAction,
+)
+
 
 class Board(QWidget):
     def __init__(self):
@@ -23,7 +36,7 @@ class Board(QWidget):
             [None, None, None, None, None, None, None, None, None],
         ]
 
-        self.resize(900,900)
+        self.resize(900, 900)
 
         # Variable to track the current player (X or O)
         self.current_player = "X"
@@ -116,11 +129,31 @@ class GameWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Adds a side menu to the middle of the match
+
+        match_menu_bar = self.menuBar()
+        match_menu = match_menu_bar.addMenu('Match')
+
+        # Adds actions to said menu
+
+        exit_action_match = QAction('Exit', self)
+        exit_action_match.triggered.connect(self.close)
+        return_to_main_menu = QAction('Return to main menu', self)
+        return_to_main_menu.triggered.connect()
+        match_menu.addAction(exit_action_match)
+
         self.central_widget = Board()
         self.setCentralWidget(self.central_widget)
 
         self.setGeometry(900, 900, 900, 900)
         self.setWindowTitle('Meta-Morpion')
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
 
 
 if __name__ == "__main__":
