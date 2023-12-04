@@ -115,6 +115,34 @@ class Game:
         else : 
             return False
         
+    def check_win(self, big_board_state): #fonction qui dit s'il y a un gagnant DU JEU et si oui quel joueur
+        # Vérifiez si un joueur a gagné horizontalement, verticalement ou en diagonale dans les grandes cases
+        players = ['X', 'O']
+        for player in players:
+            for i in range(3):
+                # Vérification horizontale
+                if (
+                    big_board_state[i * 3] == big_board_state[i * 3 + 1] == big_board_state[i * 3 + 2] == player
+                    and big_board_state[i * 3] is not None
+                ):
+                    return player
+                # Vérification verticale
+                if (
+                    big_board_state[i] == big_board_state[i + 3] == big_board_state[i + 6] == player
+                    and big_board_state[i] is not None
+                ):
+                    return player
+                # Vérification diagonale
+                if (
+                    big_board_state[0] == big_board_state[4] == big_board_state[8] == player
+                    and big_board_state[0] is not None
+                ) or (
+                    big_board_state[2] == big_board_state[4] == big_board_state[6] == player
+                    and big_board_state[2] is not None
+                ):
+                    return player #on renvoit le grand gagnant
+        return None  # Aucun gagnant pour le moment
+        
 #only used for testing the function (class game not working properly) 
 def possible_squares_for_current_player(table,big_square_table,last_square,number_of_moves):
         list_possible_squares = []
