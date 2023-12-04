@@ -138,15 +138,30 @@ class GameWindow(QMainWindow):
 
         exit_action_match = QAction('Exit', self)
         exit_action_match.triggered.connect(self.close)
-        return_to_main_menu = QAction('Return to main menu', self)
-        return_to_main_menu.triggered.connect()
         match_menu.addAction(exit_action_match)
+        return_to_main_menu = QAction('Return to main menu', self)
+        return_to_main_menu.triggered.connect(self.show_main_menu)
+        match_menu.addAction(return_to_main_menu)
 
         self.central_widget = Board()
         self.setCentralWidget(self.central_widget)
 
         self.setGeometry(900, 900, 900, 900)
         self.setWindowTitle('Meta-Morpion')
+
+    def show_main_menu(self):
+        from menu import Ui_MainWindow
+
+        # Cria uma nova instância do menu principal
+        main_menu = QMainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUi(main_menu)
+
+        # Fecha a janela atual
+        self.close()
+
+        # Exibe a nova instância do menu principal
+        main_menu.show()
 
     def center(self):
         qr = self.frameGeometry()
