@@ -1,6 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QSizePolicy
-
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QSizePolicy, QVBoxLayout, QMainWindow, QApplication, QDesktopWidget
 
 class Board(QWidget):
     def __init__(self):
@@ -12,7 +11,7 @@ class Board(QWidget):
         self.setLayout(grid)
 
         # Create the matrix to represent the board
-        self.tabuleiro = [
+        self.table = [
             [None, None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None, None],
@@ -38,12 +37,10 @@ class Board(QWidget):
                 )  # Set size policy
                 btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col))
                 grid.addWidget(btn, i, j)
-                self.tabuleiro[i][j] = btn
+                self.table[i][j] = btn
 
                 # Increase the font size for larger buttons
-                font = btn.font()
-                font.setPointSize(20)
-                btn.setFont(font)
+                self.update_font_size(btn)
 
                 # Set background color based on the block position
                 block_color = self.get_block_color(i // 3, j // 3)
@@ -67,11 +64,25 @@ class Board(QWidget):
                 self.tabuleiro[row][col].setEnabled(True)
 
 
+    def resizeEvent(self, event):
+        # Override the resizeEvent method to handle window resize
+        for i in range(9):
+            for j in range(9):
+                btn = self.table[i][j]
+                self.update_font_size(btn)
+
+    def update_font_size(self, button):
+        # Update font size based on window width
+        font_size = self.width() // 40
+        font = button.font()
+        font.setPointSize(font_size)
+        button.setFont(font)
+
     def button_click(self, row, col):
         # Function to be called as the button is clicked
-        if not self.tabuleiro[row][col].text():  # Check if the button is empty
-            self.tabuleiro[row][col].setText(self.current_player)
-            self.tabuleiro[row][col].setStyleSheet(
+        if not self.table[row][col].text():  # Check if the button is empty
+            self.table[row][col].setText(self.current_player)
+            self.table[row][col].setStyleSheet(
                 f"background-color: {self.get_player_color()}"
             )
             # Désactiver les boutons associés aux cases interdites
@@ -81,7 +92,9 @@ class Board(QWidget):
             # Réactiver tous les boutons pour le prochain tour
             self.enable_all_buttons()
 
-            # Basculer le joueur
+            # Toggle player
+            #last_square = self.table[row][col]
+
             self.current_player = "O" if self.current_player == "X" else "X"
 
     def get_player_color(self):
@@ -92,13 +105,25 @@ class Board(QWidget):
         # Return alternating colors for the blocks
         return "lightgray" if (row + col) % 2 == 0 else "gray"
 
+
     def update_ui(self):
         # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
         # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
         pass
 
 
+class GameWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.central_widget = Board()
+        self.setCentralWidget(self.central_widget)
+
+        self.setGeometry(900, 900, 900, 900)
+        self.setWindowTitle('Meta-Morpion')
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    tabuleiro = Board()
+    table = Board()
     sys.exit(app.exec_())
