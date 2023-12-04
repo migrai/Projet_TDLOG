@@ -140,19 +140,21 @@ class Game():
 
 '''
 TEST check_win
+
+
+# Exemple d'utilisation
+game = Game()
+
+# Définissez manuellement l'état des grandes cases pour un exemple de test
+example_big_board_state = ['O', None, 'X', 'O', 'X', 'O', 'O', None, 'X']
+
+# Testez la fonction check_win
+winner = game.check_win(example_big_board_state)
+
+# Affichez le résultat
+if winner:
+    print(f"Le joueur {winner} a gagné.")
+else:
+    print("Aucun gagnant pour le moment.")
+
 '''
-
-# # Exemple d'utilisation
-# game = Game()
-
-# # Définissez manuellement l'état des grandes cases pour un exemple de test
-# example_big_board_state = ['O', None, 'X', 'O', 'X', 'O', 'O', None, 'X']
-
-# # Testez la fonction check_win
-# winner = game.check_win(example_big_board_state)
-
-# # Affichez le résultat
-# if winner:
-#     print(f"Le joueur {winner} a gagné.")
-# else:
-#     print("Aucun gagnant pour le moment.")
