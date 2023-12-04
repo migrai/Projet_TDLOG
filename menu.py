@@ -1,47 +1,106 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QVBoxLayout, QPushButton, QWidget, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget
+from PyQt5.QtGui import QIcon
 from board import GameWindow
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class MenuWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(600, 400)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
 
-        self.initUI()
+        # Adds a vertical layout to the main window
+        vertical_layout = QtWidgets.QVBoxLayout(self.centralwidget)
 
-    def initUI(self):
-        central_widget = QWidget(self)
-        self.setCentralWidget(central_widget)
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(36)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        vertical_layout.addWidget(self.label)
+        vertical_layout.addWidget(self.label, alignment=QtCore.Qt.AlignHCenter)
 
-        # Vertical button layout
-        layout = QVBoxLayout()
+        # Adds buttons to central window
+        self.singleplayer_button = QtWidgets.QPushButton(
+            "Singleplayer", self.centralwidget
+        )
+        self.singleplayer_button.setIcon(QtGui.QIcon("icon_singleplayer.png"))
+        vertical_layout.addWidget(self.singleplayer_button)
 
-        # Button to play alone
-        play_alone_button = QPushButton('Singleplayer', self)
-        play_alone_button.clicked.connect(self.play_alone)
-        play_alone_button.setStyleSheet("background-color: blue; color: white; border: 1px solid black;")
-        layout.addWidget(play_alone_button)
+        self.two_players_button = QtWidgets.QPushButton(
+            "Two Players", self.centralwidget
+        )
+        self.two_players_button.setIcon(QtGui.QIcon("icon_two_players.png"))
+        vertical_layout.addWidget(self.two_players_button)
 
-        # Button for two players
-        play_two_players_button = QPushButton('Two Players', self)
-        play_two_players_button.clicked.connect(self.play_two_players)
-        play_two_players_button.setStyleSheet("background-color: green; color: white; border: 1px solid black;")
-        layout.addWidget(play_two_players_button)
+        self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
+        self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
+        vertical_layout.addWidget(self.exit_button)
 
-        # Button to exit
-        exit_button = QPushButton('Exit', self)
-        exit_button.clicked.connect(self.close)
-        exit_button.setStyleSheet("background-color: red; color: white; border: 1px solid black;")
-        layout.addWidget(exit_button)
+        # Names each button and defines what each does
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menuEdit = QtWidgets.QMenu(self.menubar)
+        self.menuEdit.setObjectName("menuEdit")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.actionCopy = QtWidgets.QAction(MainWindow)
+        self.actionCopy.setObjectName("actionCopy")
+        self.actionPaste = QtWidgets.QAction(MainWindow)
+        self.actionPaste.setObjectName("actionPaste")
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionNew = QtWidgets.QAction(MainWindow)
+        self.actionNew.setObjectName("actionNew")
+        self.menuFile.addAction(self.actionNew)
+        self.menuFile.addAction(self.actionSave)
+        self.menuEdit.addAction(self.actionCopy)
+        self.menuEdit.addAction(self.actionPaste)
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuEdit.menuAction())
 
-        central_widget.setLayout(layout)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.setGeometry(900, 900, 900, 900)
-        self.setWindowTitle('Game Menu')
-        self.center()
+        self.actionNew.triggered.connect(lambda: self.clicked("New was clicked"))
+        self.actionSave.triggered.connect(lambda: self.clicked("Save was clicked"))
+        self.actionCopy.triggered.connect(lambda: self.clicked("Copy was clicked"))
+        self.actionPaste.triggered.connect(lambda: self.clicked("Paste was clicked"))
+        self.singleplayer_button.clicked.connect(
+            lambda: self.clicked("Singleplayer was clicked")
+        )
+        self.two_players_button.clicked.connect((self.play_two_players))
+        self.exit_button.clicked.connect(MainWindow.close)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label.setText(_translate("MainWindow", "MetaMorpion"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
+        self.actionCopy.setText(_translate("MainWindow", "Copy"))
+        self.actionCopy.setShortcut(_translate("MainWindow", "Ctrl+C"))
+        self.actionPaste.setText(_translate("MainWindow", "Paste"))
+        self.actionPaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
+        self.actionNew.setText(_translate("MainWindow", "New"))
+        self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
+
+    def clicked(self, text):
+        self.label.setText(text)
+        self.label.adjustSize()
 
     def center(self):
-        # Centers window
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -56,12 +115,14 @@ class MenuWindow(QMainWindow):
         self.game_window.show()
         self.game_window.resize(900, 900)
         self.game_window.center()
-        self.hide()
-        pass
+        MainWindow.close()
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    menu_window = MenuWindow()
-    menu_window.show()
+
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
     sys.exit(app.exec_())
