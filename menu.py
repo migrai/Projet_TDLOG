@@ -1,7 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget
 from PyQt5.QtGui import QIcon
-from board import GameWindow
+from gamewindow import GameWindow
+from gamelogic import GameLogic
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -78,8 +79,10 @@ class Ui_MainWindow(object):
         self.singleplayer_button.clicked.connect(
             lambda: self.clicked("Singleplayer was clicked")
         )
-        self.two_players_button.clicked.connect((self.play_two_players))
+        self.two_players_button.clicked.connect(lambda: GameLogic.play_two_players(self, MainWindow))
         self.exit_button.clicked.connect(MainWindow.close)
+    
+        self.original_geometry = MainWindow.geometry()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -106,16 +109,8 @@ class Ui_MainWindow(object):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def play_alone(self):
-        # Implement logic for one player (IA)
-        pass
-
-    def play_two_players(self):
-        self.game_window = GameWindow()
-        self.game_window.show()
-        self.game_window.resize(900, 900)
-        self.game_window.center()
-        MainWindow.close()
+    def save_geometry(self):
+        return self.original_geometry
 
 
 if __name__ == "__main__":
@@ -124,5 +119,8 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    
+    table = GameWindow(ui)
+
     MainWindow.show()
     sys.exit(app.exec_())
