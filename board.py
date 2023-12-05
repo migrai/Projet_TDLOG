@@ -68,13 +68,13 @@ class Board(QWidget):
     def disable_buttons(self, list_forbidden_squares):
         # Désactiver les boutons aux coordonnées spécifiées
         for row, col in list_forbidden_squares:
-            self.tabuleiro[row][col].setEnabled(False)
+            self.table[row][col].setEnabled(False)
 
     def enable_all_buttons(self):
         # Réactiver tous les boutons
         for row in range(9):
             for col in range(9):
-                self.tabuleiro[row][col].setEnabled(True)
+                self.table[row][col].setEnabled(True)
 
 
     def resizeEvent(self, event):
@@ -118,58 +118,10 @@ class Board(QWidget):
         # Return alternating colors for the blocks
         return "lightgray" if (row + col) % 2 == 0 else "gray"
 
-
     def update_ui(self):
         # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
         # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
         pass
-
-
-class GameWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        # Adds a side menu to the middle of the match
-
-        match_menu_bar = self.menuBar()
-        match_menu = match_menu_bar.addMenu('Match')
-
-        # Adds actions to said menu
-
-        exit_action_match = QAction('Exit', self)
-        exit_action_match.triggered.connect(self.close)
-        match_menu.addAction(exit_action_match)
-        return_to_main_menu = QAction('Return to main menu', self)
-        return_to_main_menu.triggered.connect(self.show_main_menu)
-        match_menu.addAction(return_to_main_menu)
-
-        self.central_widget = Board()
-        self.setCentralWidget(self.central_widget)
-
-        self.setGeometry(900, 900, 900, 900)
-        self.setWindowTitle('Meta-Morpion')
-
-    def show_main_menu(self):
-        from menu import Ui_MainWindow
-
-        # Cria uma nova instância do menu principal
-        main_menu = QMainWindow()
-        ui = Ui_MainWindow()
-        ui.setupUi(main_menu)
-
-        # Fecha a janela atual
-        self.close()
-
-        # Exibe a nova instância do menu principal
-        main_menu.show()
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
