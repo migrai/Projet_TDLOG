@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget
 from PyQt5.QtGui import QIcon
 from gamewindow import GameWindow
-from gamelogic import GameLogic
+from menuLogic import MenuLogic
 from PyQt5 import QtCore, QtGui, QtWidgets
 from game import Game
 
@@ -80,7 +80,7 @@ class Ui_MainWindow(object):
         self.singleplayer_button.clicked.connect(
             lambda: self.clicked("Singleplayer was clicked")
         )
-        self.two_players_button.clicked.connect(lambda: GameLogic.play_two_players(self, MainWindow))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
         self.exit_button.clicked.connect(MainWindow.close)
     
         self.original_geometry = MainWindow.geometry()
