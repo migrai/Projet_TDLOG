@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 
+
 class Board(QWidget):
     def __init__(self):
         super().__init__()
@@ -24,19 +25,11 @@ class Board(QWidget):
         self.setLayout(grid)
 
         # Create the matrix to represent the board
-        self.table = [
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-            [None, None, None, None, None, None, None, None, None],
-        ]
+        self.table = [[None] * 9 for _ in range(9)]
 
-        self.resize(900, 900)
+        # Set a fixed size for the buttons and the window
+        button_size = 100
+        self.setFixedSize(button_size * 9, button_size * 9)
 
         # Variable to track the current player (X or O)
         self.current_player = "X"
@@ -45,9 +38,8 @@ class Board(QWidget):
         for i in range(9):
             for j in range(9):
                 btn = QPushButton("", self)
-                btn.setSizePolicy(
-                    QSizePolicy.Expanding, QSizePolicy.Expanding
-                )  # Set size policy
+                btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                btn.setFixedSize(button_size, button_size)
                 btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col))
                 grid.addWidget(btn, i, j)
                 self.table[i][j] = btn
@@ -141,6 +133,8 @@ class Board(QWidget):
     def update_ui(self):
         # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
         # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
+        #l =
+        
         pass
 
 if __name__ == "__main__":
