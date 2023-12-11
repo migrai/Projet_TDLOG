@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon
 from gamewindow import GameWindow
 from gamelogic import GameLogic
 from PyQt5 import QtCore, QtGui, QtWidgets
+from game import Game
 
 
 class Ui_MainWindow(object):
