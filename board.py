@@ -91,6 +91,26 @@ class Board(QWidget):
         font.setPointSize(font_size)
         button.setFont(font)
 
+    def get_player_color(self):
+        # Return color based on the current player
+        return "red" if self.current_player == "X" else "blue"
+
+    def get_block_color(self, row, col):
+        # Return alternating colors for the blocks
+        return "lightgray" if (row + col) % 2 == 0 else "gray"
+    
+    def disable_buttons(self, list_forbidden_squares):
+        # Désactiver les boutons aux coordonnées spécifiées
+        for row, col in list_forbidden_squares:
+            self.tabuleiro[row][col].setEnabled(False)
+
+    def enable_all_buttons(self):
+        # Réactiver tous les boutons
+        for row in range(9):
+            for col in range(9):
+                self.tabuleiro[row][col].setEnabled(True)
+
+
     def button_click(self, row, col):
         # Function to be called as the button is clicked
         if not self.table[row][col].text():  # Check if the button is empty
