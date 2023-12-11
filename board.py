@@ -40,7 +40,8 @@ class Board(QWidget):
                 btn = QPushButton("", self)
                 btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn.setFixedSize(button_size, button_size)
-                btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col))
+                initial_list_forbidden = [(k,l) for k in range(9) for l in range(9)]
+                btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col, initial_list_forbidden))
                 grid.addWidget(btn, i, j)
                 self.table[i][j] = btn
 
@@ -55,7 +56,6 @@ class Board(QWidget):
 
         self.setWindowTitle("Meta-Morpion")
         self.show()
-    # Ajoutez ces méthodes à votre classe Board
 
     def disable_buttons(self, list_forbidden_squares):
         # Désactiver les boutons aux coordonnées spécifiées
@@ -91,28 +91,27 @@ class Board(QWidget):
         # Return alternating colors for the blocks
         return "lightgray" if (row + col) % 2 == 0 else "gray"
     
+    
     def disable_buttons(self, list_forbidden_squares):
         # Désactiver les boutons aux coordonnées spécifiées
         for row, col in list_forbidden_squares:
-            self.tabuleiro[row][col].setEnabled(False)
+            self.table[row][col].setEnabled(False)
 
     def enable_all_buttons(self):
-        # Réactiver tous les boutons
         for row in range(9):
             for col in range(9):
-                self.tabuleiro[row][col].setEnabled(True)
+                self.table[row][col].setEnabled(True)
 
 
-    def button_click(self, row, col):
+    def button_click(self, row, col, list_forbidden_squares):
         # Function to be called as the button is clicked
         if not self.table[row][col].text():  # Check if the button is empty
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(
                 f"background-color: {self.get_player_color()}"
             )
-            # Désactiver les boutons associés aux cases interdites
-            disabled_coordinates = self.get_disabled_coordinates()  # Mettez à jour cette fonction selon vos besoins
-            self.disable_buttons(disabled_coordinates)
+            # Disable buttons associated with forbidden squares
+            self.disable_buttons(list_forbidden_squares)
 
             # Réactiver tous les boutons pour le prochain tour
             self.enable_all_buttons()
