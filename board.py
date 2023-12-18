@@ -29,8 +29,6 @@ class Board(QWidget):
 
         # Create the matrix of "X" or "O"
         self.table_state = [[None] * 9 for _ in range(9)]
-        self.table_state[0][0] = "X"
-        self.table_state[0][1] = "O"
 
         # Set a fixed size for the buttons and the window
         button_size = 100
