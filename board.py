@@ -31,7 +31,6 @@ class Board(QWidget):
         self.last_square = None
         self.big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
         self.nbr_square_in_big_square = [[0 for i in range(3)] for j in range(3)]
-        self.nb_big_square_pat = 0
         # Set a fixed size for the buttons and the window
         button_size = 100
         self.setFixedSize(button_size * 9, button_size * 9)
@@ -125,8 +124,7 @@ class Board(QWidget):
         btn.setFixedSize(button_size, button_size)
         grid.addWidget(btn, x*3 , 3*y)
         btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
-        self.big_square_table[x][y] = self.nb_big_square_pat
-        self.nb_big_square_pat += 1
+        self.big_square_table[x][y] = "égalité"
 
     def button_click(self, row, col): 
         # Function to be called as the button is clicked
