@@ -63,7 +63,7 @@ class Board_1D(QWidget):
 
     def update_font_size(self, button, times = 1): #fonction qui s
         # Update font size based on window width
-        font_size = times * self.width() // 20
+        font_size = times * self.width() // 7
         font = button.font()
         font.setPointSize(font_size)
         button.setFont(font)
@@ -114,7 +114,8 @@ class Board_1D(QWidget):
             if game.is_winner(self.square,self.current_player):#vérifie si le jeu est fini 
                 self.disable_all_buttons()
                 print(self.current_player)  
-
+            if len(self.list_forbidden_squares)==9: # pas de move possible
+                print("égalité") # écran d'égalité
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
             
             if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)

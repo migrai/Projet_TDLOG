@@ -149,7 +149,9 @@ class Board(QWidget):
 
                 if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
                     self.disable_all_buttons()
-                    print(self.current_player)  
+                    print(self.current_player) # ajouter un écran de victoire
+                if len(self.list_forbidden_squares)==81: # on ne peut jouer nulle part
+                    print("égalité") #ajouter un écran d'égalité
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
             for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
                 for j in range(9):
@@ -167,20 +169,6 @@ class Board(QWidget):
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
 
-    def get_player_color(self):
-        # Return color based on the current player
-        return "red" if self.current_player == "X" else "blue"
-
-    def get_block_color(self, row, col):
-        # Return alternating colors for the blocks
-        return "lightgray" if (row + col) % 2 == 0 else "gray"
-
-    def update_ui(self):
-        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
-        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
-        #l =
-        
-        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
