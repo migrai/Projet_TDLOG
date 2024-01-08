@@ -30,6 +30,7 @@ class Board(QWidget):
         self.list_forbidden_squares = []
         self.last_square = None
         self.big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
+        self.nbr_square_in_big_square = [[0 for i in range(3)] for j in range(3)]
         # Set a fixed size for the buttons and the window
         button_size = 100
         self.setFixedSize(button_size * 9, button_size * 9)
@@ -114,7 +115,16 @@ class Board(QWidget):
         block_color = self.get_player_color()
         btn.setStyleSheet(f"background-color: {block_color}; border: 1px solid black")
         btn.setText(self.current_player)
-    
+
+    def color_pat_big_square(self,x,y):
+        button_size = 293
+        grid = self.layout()
+        btn = QPushButton("", self)
+        btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        btn.setFixedSize(button_size, button_size)
+        grid.addWidget(btn, x*3 , 3*y)
+        btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
+
     def button_click(self, row, col): 
         # Function to be called as the button is clicked
         #print(self.list_forbidden_squares)
@@ -130,7 +140,7 @@ class Board(QWidget):
 
             # Toggle player
             self.last_square = (row,col)
-
+            self.nbr_square_in_big_square[row//3][col//3] += 1 
             #print(game.current_big_square(self.last_square,self.table))
             #print(game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player))
 
@@ -152,6 +162,10 @@ class Board(QWidget):
                     print(self.current_player) # ajouter un écran de victoire
                 if len(self.list_forbidden_squares)==81: # on ne peut jouer nulle part
                     print("égalité") #ajouter un écran d'égalité
+
+            elif self.nbr_square_in_big_square[row//3][col//3]==9 and not game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player):
+                self.color_pat_big_square(row//3,col//3)
+
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
             for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
                 for j in range(9):
