@@ -1,4 +1,5 @@
 import sys
+import game
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -13,7 +14,7 @@ from PyQt5.QtWidgets import (
     QAction,
 )
 
-
+from PyQt5.QtCore import Qt
 
 class Board(QWidget):
     def __init__(self):
@@ -23,13 +24,12 @@ class Board(QWidget):
     def initUI(self):
         grid = QGridLayout()
         self.setLayout(grid)
-
-        # Create the matrix of buttons to represent the board
+        self.setCursor(Qt.SizeAllCursor)
+        # Create the matrix to represent the board
         self.table = [[None] * 9 for _ in range(9)]
-
-        # Create the matrix of "X" or "O"
-        self.table_state = [[None] * 9 for _ in range(9)]
-
+        self.list_forbidden_squares = []
+        self.last_square = None
+        self.big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
         # Set a fixed size for the buttons and the window
         button_size = 100
         self.setFixedSize(button_size * 9, button_size * 9)
@@ -43,8 +43,7 @@ class Board(QWidget):
                 btn = QPushButton("", self)
                 btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn.setFixedSize(button_size, button_size)
-                initial_list_forbidden = [(k,l) for k in range(9) for l in range(9)]
-                btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col, initial_list_forbidden))
+                btn.clicked.connect(lambda _, row=i, col=j: self.button_click(row, col))
                 grid.addWidget(btn, i, j)
                 self.table[i][j] = btn
 
@@ -52,31 +51,13 @@ class Board(QWidget):
                 self.update_font_size(btn)
 
                 # Set background color based on the block position
-                block_color = self.get_big_square_color(i // 3, j // 3)
+                block_color = self.get_block_color(i // 3, j // 3)
                 btn.setStyleSheet(
                     f"background-color: {block_color}; border: 1px solid black"
                 )
 
-                #set background color based on the state of the table
-                self.table[i][j].setText(self.table_state[i][j])
-                self.table[i][j].setStyleSheet(
-                f"background-color: {self.get_player_color(i,j)}; border: 1px solid black"
-            )
-
         self.setWindowTitle("Meta-Morpion")
         self.show()
-
-    def disable_buttons(self, list_forbidden_squares):
-        # Désactiver les boutons aux coordonnées spécifiées
-        for row, col in list_forbidden_squares:
-            self.table[row][col].setEnabled(False)
-
-    def enable_all_buttons(self):
-        # Réactiver tous les boutons
-        for row in range(9):
-            for col in range(9):
-                self.table[row][col].setEnabled(True)
-
 
     def resizeEvent(self, event):
         # Override the resizeEvent method to handle window resize
@@ -85,52 +66,114 @@ class Board(QWidget):
                 btn = self.table[i][j]
                 self.update_font_size(btn)
 
-    def update_font_size(self, button):
+    def update_font_size(self, button, times = 1): #fonction qui s
         # Update font size based on window width
-        font_size = self.width() // 40
+        font_size = times * self.width() // 20
         font = button.font()
         font.setPointSize(font_size)
         button.setFont(font)
 
-    def get_player_color(self,row,col):
-        #return color based on the state of the square
-        if self.table_state[row][col]=="X":
-            return "red"
-        if self.table_state[row][col]=="O":
-            return "blue"
-        if self.table_state[row][col]==None:
-            return self.get_big_square_color(row//3,col//3)
-        
-    def get_current_player_color(self):
+    def get_player_color(self):
         # Return color based on the current player
         return "red" if self.current_player == "X" else "blue"
 
-    def get_big_square_color(self, row, col):
+    def get_block_color(self, row, col):
         # Return alternating colors for the blocks
-        if (row + col) % 2 == 0:
-            return "lightgray"
-        else:
-            return "gray"
-        
-    def button_click(self, row, col, list_forbidden_squares):
+        return "lightgray" if (row + col) % 2 == 0 else "gray"
+
+    
+    def disable_buttons(self): 
+        # Désactive les boutons aux coordonnées spécifiées
+        for row, col in self.list_forbidden_squares:
+            self.table[row][col].setEnabled(False)
+
+    def enable_all_buttons(self):#active tous les boutons 
+        for row in range(9):
+            for col in range(9):
+                self.table[row][col].setEnabled(True)
+
+    def disable_all_buttons(self): # rend inactif tous les boutons
+        for row in range(9):
+            for col in range(9):
+                self.table[row][col].setEnabled(False)    
+    
+    def possible_moves(self): # retourne tous les coups possibles 
+        return ([(row,col) for row in range(9) for col in range(9) if not ((row, col) in self.list_forbidden_squares or (row,col) in game.forbidden_moves_for_current_player(self.last_square,self.big_square_table)) ])
+
+    def create_big_button(self,x,y) : #créé la grosse case au point (x,y)
+        button_size = 293
+        grid = self.layout()
+        btn = QPushButton("", self)
+        btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        btn.setFixedSize(button_size, button_size)
+        grid.addWidget(btn, x*3 , 3*y)
+        # Increase the font size for larger buttons
+        self.update_font_size(btn,times = 3)
+
+        # Set background color based on the block position
+        block_color = self.get_player_color()
+        btn.setStyleSheet(f"background-color: {block_color}; border: 1px solid black")
+        btn.setText(self.current_player)
+    
+    def button_click(self, row, col): 
         # Function to be called as the button is clicked
-        if not self.table[row][col].text():  # Check if the button is empty
+        #print(self.list_forbidden_squares)
+        list_possible_moves = self.possible_moves()
+        #print(list_possible_moves,len(list_possible_moves))
+        if (row, col) in list_possible_moves: # Check if the button is empty
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(
-                f"background-color: {self.get_current_player_color()}"
+                f"background-color: {self.get_player_color()}"
             )
-            self.table_state[row][col] = self.current_player
             # Disable buttons associated with forbidden squares
-            self.disable_buttons(list_forbidden_squares)
-
-            # Enable all buttons for the next turn
-            self.enable_all_buttons()
+            self.list_forbidden_squares.append((row,col))
 
             # Toggle player
-            last_square = self.table[row][col]
+            self.last_square = (row,col)
 
-            self.current_player = "O" if self.current_player == "X" else "X"
-        print(self.table_state)
+            #print(game.current_big_square(self.last_square,self.table))
+            #print(game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player))
+
+            if game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player):#verifie si le grand carré a été gagné
+                for i in range(3):
+                    for j in range(3):
+                        if i == row//3 and j == col//3:
+                            for k in range(3):
+                                for l in range(3):
+                                    row2, col2 = 3*i+k,3*j+l
+                                    if not ((row2,col2) in self.list_forbidden_squares):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
+                                        self.list_forbidden_squares.append((row2,col2))
+                self.big_square_table[row//3][col//3]=self.current_player
+                #print(self.big_square_table)
+                self.create_big_button(row//3,col//3)
+
+                if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
+                    self.disable_all_buttons()
+                    print(self.current_player)  
+            list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
+            for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
+                for j in range(9):
+                    if self.table[i][j].text() == "" :
+                        block_color = self.get_block_color(i // 3, j // 3)
+                        self.table[i][j].setStyleSheet(
+                        f"background-color: {block_color}; border: 1px solid black"
+                )
+            for (i,j) in list_possible_moves : # colorie les coups possubles en jaune
+                self.table[i][j].setStyleSheet(f"background-color: {'yellow'}; border: 1px solid black")
+            self.disable_buttons()
+            if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
+                self.setCursor(Qt.SizeAllCursor)
+            else:
+                self.setCursor(Qt.ForbiddenCursor)
+            self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
+
+    def get_player_color(self):
+        # Return color based on the current player
+        return "red" if self.current_player == "X" else "blue"
+
+    def get_block_color(self, row, col):
+        # Return alternating colors for the blocks
+        return "lightgray" if (row + col) % 2 == 0 else "gray"
 
     def update_ui(self):
         # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
