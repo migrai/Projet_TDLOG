@@ -25,17 +25,17 @@ class Ui_MainWindow(object):
         vertical_layout.addWidget(self.label, alignment=QtCore.Qt.AlignHCenter)
 
         # Adds buttons to central window
-        self.singleplayer_button = QtWidgets.QPushButton(
-            "Singleplayer", self.centralwidget
+        self.morpion_button = QtWidgets.QPushButton(
+            "Morpion", self.centralwidget
         )
-        self.singleplayer_button.setIcon(QtGui.QIcon("icon_singleplayer.png"))
-        vertical_layout.addWidget(self.singleplayer_button)
+        self.morpion_button.setIcon(QtGui.QIcon("icon_1.png"))
+        vertical_layout.addWidget(self.morpion_button)
 
-        self.two_players_button = QtWidgets.QPushButton(
-            "Two Players", self.centralwidget
+        self.meta_button = QtWidgets.QPushButton(
+            "Méta-Morpion", self.centralwidget
         )
-        self.two_players_button.setIcon(QtGui.QIcon("icon_two_players.png"))
-        vertical_layout.addWidget(self.two_players_button)
+        self.meta_button.setIcon(QtGui.QIcon("icon_2.png"))
+        vertical_layout.addWidget(self.meta_button)
 
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
@@ -46,8 +46,8 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
         self.menubar.setObjectName("menubar")
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
+        self.menuOptions = QtWidgets.QMenu(self.menubar)
+        self.menuOptions.setObjectName("menuFile")
         self.menuEdit = QtWidgets.QMenu(self.menubar)
         self.menuEdit.setObjectName("menuEdit")
         MainWindow.setMenuBar(self.menubar)
@@ -60,35 +60,35 @@ class Ui_MainWindow(object):
         self.actionPaste.setObjectName("actionPaste")
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
-        self.actionNew = QtWidgets.QAction(MainWindow)
-        self.actionNew.setObjectName("actionNew")
-        self.menuFile.addAction(self.actionNew)
-        self.menuFile.addAction(self.actionSave)
+
+        self.menuOptions.addAction(self.actionSave)
         self.menuEdit.addAction(self.actionCopy)
         self.menuEdit.addAction(self.actionPaste)
-        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuOptions.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.actionNew.triggered.connect(lambda: self.clicked("New was clicked"))
         self.actionSave.triggered.connect(lambda: self.clicked("Save was clicked"))
         self.actionCopy.triggered.connect(lambda: self.clicked("Copy was clicked"))
         self.actionPaste.triggered.connect(lambda: self.clicked("Paste was clicked"))
-        self.singleplayer_button.clicked.connect(
-            lambda: self.clicked("Singleplayer was clicked")
-        )
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
+        self.morpion_button.clicked.connect(
+            lambda: MenuLogic.morpion_clicked(self, MainWindow)
+            )
+        self.meta_button.clicked.connect(
+            lambda: MenuLogic.meta_morpion_clicked(self, MainWindow)
+            )
         self.exit_button.clicked.connect(MainWindow.close)
     
         self.original_geometry = MainWindow.geometry()
+        self.vertical_layout = vertical_layout
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "MetaMorpion"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "3Morpion"))
+        self.label.setText(_translate("MainWindow", "Main Menu"))
+        self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.actionCopy.setText(_translate("MainWindow", "Copy"))
         self.actionCopy.setShortcut(_translate("MainWindow", "Ctrl+C"))
@@ -96,8 +96,7 @@ class Ui_MainWindow(object):
         self.actionPaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
-        self.actionNew.setText(_translate("MainWindow", "New"))
-        self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
+        
 
     def clicked(self, text):
         self.label.setText(text)
@@ -111,7 +110,6 @@ class Ui_MainWindow(object):
 
     def save_geometry(self):
         return self.original_geometry
-
 
 if __name__ == "__main__":
 
