@@ -161,7 +161,7 @@ class Board(QWidget):
                 if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
                     self.disable_all_buttons()
                     print(self.current_player) # ajouter un écran de victoire
-                if len(self.list_forbidden_squares)==81: # on ne peut jouer nulle part
+                elif len(self.list_forbidden_squares)==81: # on ne peut jouer nulle part
                     print("égalité") #ajouter un écran d'égalité
 
             elif self.nbr_square_in_big_square[row//3][col//3]==9 and not game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player):

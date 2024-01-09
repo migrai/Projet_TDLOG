@@ -33,3 +33,9 @@ def is_winner(board, player):
            all(board[i][i] == player for i in range(3)) or \
            all(board[i][2 - i] == player for i in range(3))
 
+'''
+
+def if_pat_in_big_square(self, board, row, col): # row, col = coordonnées du petit carré
+    x, y = row // 3, col // 3
+    if self.nbr_square_in_big_square[row][col]==9 and not is_winner(current_big_square(self.last_square,self.table),self.current_player):
+'''
