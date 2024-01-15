@@ -14,12 +14,12 @@ def minimax(board, possible_moves, depth = 0, maximizing_player="O" ):
     elif len(possible_moves)==0:
         return 0
 
-    if maximizing_player:
+    if maximizing_player=="O":
         max_eval = float('-inf')
         for index, coord in enumerate(possible_moves):
             i,j = coord
             board[i][j] = 'O'
-            eval = minimax(board,possible_moves[:index]+possible_moves[index+1:])
+            eval = minimax(board,possible_moves[:index]+possible_moves[index+1:],maximizing_player="X")
             board[i][j] = ' '
         
             max_eval = max(max_eval, eval)
@@ -42,7 +42,7 @@ def find_best_move(board,possible_moves):
         for index, coord in enumerate(possible_moves):
             i,j = coord
             board[i][j] = 'O'
-            move_val = minimax(board,possible_moves[:index]+possible_moves[index+1:])
+            move_val = minimax(board,possible_moves[:index]+possible_moves[index+1:],maximizing_player="X")
             print("voivi la liste",possible_moves)
             board[i][j] = ' '
             
