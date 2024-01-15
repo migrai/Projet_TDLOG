@@ -1,6 +1,5 @@
 import sys
 import game
-import menuLogic
 import IA
 from PyQt5.QtWidgets import (
     QApplication,
@@ -132,7 +131,7 @@ class Board_1D(QWidget):
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
         if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 :
-            row, col = IA.find_best_move(self.square, list_possible_moves)
+            row, col = IA.find_best_move_1D(self.square, list_possible_moves)
             
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
