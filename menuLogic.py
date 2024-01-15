@@ -8,6 +8,7 @@ class MenuLogic:
         self.ui = ui
         self.MainWindow = MainWindow
         self.nb_players = None
+        self.player_list = None
 
     def play_alone(self, MainWindow, type_jeu):
         nb_players = 1
@@ -15,7 +16,7 @@ class MenuLogic:
         ok1 = MenuLogic.name_player(self, MainWindow)
         print(ok1)
         if ok1:
-            self.game_window = GameWindow(self, nb_players, type_jeu)
+            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -29,7 +30,7 @@ class MenuLogic:
         nb_players = 2
         ok1, ok2 = MenuLogic.name_players(self, MainWindow)
         if ok1 and ok2:
-            self.game_window = GameWindow(self, nb_players, type_jeu)
+            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -113,6 +114,8 @@ class MenuLogic:
         if ok1:
             # Now we can use player1_name and player2_name as needed
             print(f"Player 1's name: {player1_name}")
+            self.player_list = [player1_name, "IA"]
+        
         return ok1
 
     def name_players(self, MainWindow):
@@ -125,5 +128,6 @@ class MenuLogic:
             # Now we can use player1_name and player2_name as needed
             print(f"Player 1's name: {player1_name}")
             print(f"Player 2's name: {player2_name}")
+            self.player_list = [player1_name, player2_name]
 
         return [ok1, ok2]
