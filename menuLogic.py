@@ -28,7 +28,6 @@ class MenuLogic:
     def play_two_players(self, MainWindow):
         nb_players = 2
         ok1, ok2 = MenuLogic.name_players(self, MainWindow)
-        print(ok1, ok2)
         if ok1 and ok2:
             self.game_window = GameWindow(self)
             self.game_window.show()
