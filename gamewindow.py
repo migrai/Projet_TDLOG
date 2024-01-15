@@ -1,9 +1,10 @@
 from board import *
-from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget
+from board_1D import Board_1D
+from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget, QLabel
 from PyQt5.QtGui import QIcon
 
 class GameWindow(QMainWindow):
-    def __init__(self, ui):
+    def __init__(self, ui, nb_players, type_jeu):
         super().__init__()
 
         self.ui = ui
@@ -22,11 +23,26 @@ class GameWindow(QMainWindow):
         return_to_main_menu.triggered.connect(lambda: self.show_main_menu(ui))
         match_menu.addAction(return_to_main_menu)
 
-        self.central_widget = Board()
-        self.setCentralWidget(self.central_widget)
+        # Set up the scoreboard
+        self.scoreboard = Scoreboard()
+
+        if type_jeu == 2:
+            self.central_widget = Board(nb_players)
+        else:
+            self.central_widget = Board_1D(nb_players)
+
+        # Set the layout for the main window
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(self.scoreboard)
+        main_layout.addWidget(self.central_widget)
+        central_widget_container = QWidget()
+        central_widget_container.setLayout(main_layout)
+        self.setCentralWidget(central_widget_container)
 
         self.setGeometry(900, 900, 900, 900)
         self.setWindowTitle('Meta-Morpion')
+
+        self.center()
 
     def show_main_menu(self, MainWindow):
         original_geometry = MainWindow.save_geometry()
@@ -42,3 +58,26 @@ class GameWindow(QMainWindow):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+class Scoreboard(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self):
+        self.score_label = QLabel('Score: 0', self)
+        self.game_label = QLabel('Game Status', self)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.score_label, alignment=Qt.AlignTop | Qt.AlignRight)
+        vbox.addWidget(self.game_label, alignment=Qt.AlignTop | Qt.AlignRight)
+        vbox.addStretch(1)
+
+        self.setLayout(vbox)
+
+    def update_score(self, score):
+        self.score_label.setText(f'Score: {score}')
+
+    def update_game_label(self, text):
+        self.game_label.setText(text)
