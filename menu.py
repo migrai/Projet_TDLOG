@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget
 from PyQt5.QtGui import QIcon
-from gamewindow import GameWindow
 from menuLogic import MenuLogic
 from PyQt5 import QtCore, QtGui, QtWidgets
 
