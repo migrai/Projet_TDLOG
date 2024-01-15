@@ -1,5 +1,6 @@
 import sys
 import game
+import IA
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -17,9 +18,10 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 class Board(QWidget):
-    def __init__(self):
+    def __init__(self, nb_players):
         super().__init__()
         self.initUI()
+        self.nb_players = nb_players
 
     def initUI(self):
         grid = QGridLayout()
@@ -30,7 +32,7 @@ class Board(QWidget):
         self.list_forbidden_squares = []
         self.last_square = None
         self.big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
-        self.nbr_square_in_big_square = [[0 for i in range(3)] for j in range(3)]
+        self.nbr_square_in_bigsquare = [[0 for i in range(3)] for j in range(3)] 
         # Set a fixed size for the buttons and the window
         button_size = 100
         self.setFixedSize(button_size * 9, button_size * 9)
@@ -115,18 +117,8 @@ class Board(QWidget):
         block_color = self.get_player_color()
         btn.setStyleSheet(f"background-color: {block_color}; border: 1px solid black")
         btn.setText(self.current_player)
-
-    def color_pat_big_square(self,x,y):
-        button_size = 293
-        grid = self.layout()
-        btn = QPushButton("", self)
-        btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        btn.setFixedSize(button_size, button_size)
-        grid.addWidget(btn, x*3 , 3*y)
-        btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
-        self.big_square_table[x][y] = "égalité"
-
-    def button_click(self, row, col): 
+    
+    def button_click(self, row, col, is_player=True): 
         # Function to be called as the button is clicked
         #print(self.list_forbidden_squares)
         list_possible_moves = self.possible_moves()
@@ -141,7 +133,7 @@ class Board(QWidget):
 
             # Toggle player
             self.last_square = (row,col)
-            self.nbr_square_in_big_square[row//3][col//3] += 1 
+            self.nbr_square_in_bigsquare[row//3][col//3]+=1
             #print(game.current_big_square(self.last_square,self.table))
             #print(game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player))
 
@@ -160,32 +152,59 @@ class Board(QWidget):
 
                 if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
                     self.disable_all_buttons()
-                    print(self.current_player) # ajouter un écran de victoire
-                elif len(self.list_forbidden_squares)==81: # on ne peut jouer nulle part
-                    print("égalité") #ajouter un écran d'égalité
-
-            elif self.nbr_square_in_big_square[row//3][col//3]==9 and not game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player):
-                self.color_pat_big_square(row//3,col//3)
-
+                    print(self.current_player)  
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
+            
+            if len(self.list_forbidden_squares)==81 :
+                print("égalité")
+
             for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
                 for j in range(9):
                     if self.table[i][j].text() == "" :
                         block_color = self.get_block_color(i // 3, j // 3)
-                        self.table[i][j].setStyleSheet(
-                        f"background-color: {block_color}; border: 1px solid black"
+                        self.table[i][j].setStyleSheet(f"background-color: {block_color}; border: 1px solid black"
                 )
+                        
             for (i,j) in list_possible_moves : # colorie les coups possubles en jaune
                 self.table[i][j].setStyleSheet(f"background-color: {'yellow'}; border: 1px solid black")
             self.disable_buttons()
+
+            if self.nbr_square_in_bigsquare[row//3][col//3] ==9 and not game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player): 
+                self.color_pat_big_square(row//3,col//3)
+
             if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
                 self.setCursor(Qt.SizeAllCursor)
+
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
+        if self.nb_players == 1 and is_player:
+            row, col = IA.IA_random(self.table, list_possible_moves)
+            self.button_click(row, col, is_player = False)
+            
 
+
+
+    def color_pat_big_square(self,x,y):
+        button_size = 293
+        grid = self.layout()
+        btn = QPushButton("", self)
+        btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        btn.setFixedSize(button_size, button_size)
+        grid.addWidget(btn, x*3 , 3*y)
+        btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
+        self.big_square_table[x][y]="égalité"
+            
+            
+
+    def update_ui(self):
+        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
+        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
+        #l =
+        
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    table = Board()
+    table = Board(nb_players = 1)
     sys.exit(app.exec_())

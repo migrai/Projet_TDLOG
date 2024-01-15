@@ -1,5 +1,7 @@
 import sys
 import game
+import menuLogic
+import IA
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -17,9 +19,10 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 class Board_1D(QWidget):
-    def __init__(self):
+    def __init__(self,nb_players):
         super().__init__()
         self.initUI()
+        self.nb_players = nb_players
 
     def initUI(self):
         grid = QGridLayout()
@@ -97,10 +100,12 @@ class Board_1D(QWidget):
         return ([(row,col) for row in range(3) for col in range(3) if not ((row, col) in self.list_forbidden_squares) ])
 
     
-    def button_click(self, row, col): 
+
+    def button_click(self, row, col, is_player = True): 
         # Function to be called as the button is clicked
-        
+        #if 
         list_possible_moves = self.possible_moves()
+        print(list_possible_moves)
         if (row, col) in list_possible_moves: # Check if the button is empty
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
@@ -112,18 +117,29 @@ class Board_1D(QWidget):
             self.last_square = (row,col)
 
             if game.is_winner(self.square,self.current_player):#vérifie si le jeu est fini 
+                print("win")
                 self.disable_all_buttons()
                 print(self.current_player)  
-            if len(self.list_forbidden_squares)==9: # pas de move possible
-                print("égalité") # écran d'égalité
+            if len(self.list_forbidden_squares)==9 :
+                print("égalité")
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
+            print(list_possible_moves)
+            print(self.list_forbidden_squares)
             
             if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
                 self.setCursor(Qt.SizeAllCursor)
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
+        if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X"):
+            row, col = IA.find_best_move(self.square, list_possible_moves)
+            
+            self.table[row][col].setText(self.current_player)
+            self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
+            self.button_click(row, col, is_player = False)
+
+   
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    table = Board_1D()
+    table = Board_1D(nb_players = 1)
     sys.exit(app.exec_())

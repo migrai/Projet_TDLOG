@@ -2,16 +2,31 @@ from gamewindow import GameWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget, QInputDialog, QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+nb_players = None
 class MenuLogic:
     def __init__(self, ui, MainWindow):
         self.ui = ui
         self.MainWindow = MainWindow
+        self.nb_players = None
 
-    def play_alone(self):
+    def play_alone(self, MainWindow):
+        nb_players = 1
         # Implement logic for one player (IA)
+        ok1 = MenuLogic.name_player(self, MainWindow)
+        print(ok1)
+        if ok1:
+            self.game_window = GameWindow(self)
+            self.game_window.show()
+            self.game_window.resize(900, 900)
+            self.game_window.center()
+            MainWindow.close()
+        else:
+            self.setupUi(MainWindow)
+            QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
         pass
 
     def play_two_players(self, MainWindow):
+        nb_players = 2
         ok1, ok2 = MenuLogic.name_players(self, MainWindow)
         print(ok1, ok2)
         if ok1 and ok2:
@@ -46,7 +61,7 @@ class MenuLogic:
         self.vertical_layout.addWidget(self.exit_button)
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: self.clicked("Singleplayer was clicked"))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow))
         self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
         self.exit_button.clicked.connect(MainWindow.close)
 
@@ -74,7 +89,7 @@ class MenuLogic:
         self.vertical_layout.addWidget(self.exit_button)
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: self.clicked("Singleplayer was clicked"))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow))
         self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
         self.exit_button.clicked.connect(MainWindow.close)
 
@@ -88,7 +103,15 @@ class MenuLogic:
         self.actionNew.setText("Back to Main Menu")
         self.actionNew.setShortcut("Ctrl+N")
         return None
-    
+    def name_player(self, MainWindow):
+        # Use QInputDialog to get names of two players
+        player1_name, ok1 = QInputDialog.getText(MainWindow, "Player 1 Name", "Enter Player 1's Name:")
+        # Check if the player provided their name
+        if ok1:
+            # Now we can use player1_name and player2_name as needed
+            print(f"Player 1's name: {player1_name}")
+        return ok1
+
     def name_players(self, MainWindow):
         # Use QInputDialog to get names of two players
         player1_name, ok1 = QInputDialog.getText(MainWindow, "Player 1 Name", "Enter Player 1's Name:")
