@@ -1,6 +1,5 @@
 import sys
 import game
-import menuLogic
 import IA
 from PyQt5.QtWidgets import (
     QApplication,

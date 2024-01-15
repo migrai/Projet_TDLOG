@@ -1,9 +1,10 @@
 from board import *
+from board_1D import Board_1D
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDesktopWidget, QLabel
 from PyQt5.QtGui import QIcon
 
 class GameWindow(QMainWindow):
-    def __init__(self, ui):
+    def __init__(self, ui, nb_players, type_jeu):
         super().__init__()
 
         self.ui = ui
@@ -25,7 +26,10 @@ class GameWindow(QMainWindow):
         # Set up the scoreboard
         self.scoreboard = Scoreboard()
 
-        self.central_widget = Board()
+        if type_jeu == 2:
+            self.central_widget = Board(nb_players)
+        else:
+            self.central_widget = Board_1D(nb_players)
 
         # Set the layout for the main window
         main_layout = QVBoxLayout()

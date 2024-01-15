@@ -9,13 +9,13 @@ class MenuLogic:
         self.MainWindow = MainWindow
         self.nb_players = None
 
-    def play_alone(self, MainWindow):
+    def play_alone(self, MainWindow, type_jeu):
         nb_players = 1
         # Implement logic for one player (IA)
         ok1 = MenuLogic.name_player(self, MainWindow)
         print(ok1)
         if ok1:
-            self.game_window = GameWindow(self)
+            self.game_window = GameWindow(self, nb_players, type_jeu)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -25,11 +25,11 @@ class MenuLogic:
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
         pass
 
-    def play_two_players(self, MainWindow):
+    def play_two_players(self, MainWindow, type_jeu):
         nb_players = 2
         ok1, ok2 = MenuLogic.name_players(self, MainWindow)
         if ok1 and ok2:
-            self.game_window = GameWindow(self)
+            self.game_window = GameWindow(self, nb_players, type_jeu)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -58,10 +58,12 @@ class MenuLogic:
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
         self.vertical_layout.addWidget(self.exit_button)
+        
+        type_jeu = 1
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu))
         self.exit_button.clicked.connect(MainWindow.close)
 
         return None
@@ -86,10 +88,12 @@ class MenuLogic:
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
         self.vertical_layout.addWidget(self.exit_button)
+        
+        type_jeu = 2
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu))
         self.exit_button.clicked.connect(MainWindow.close)
 
         return None
