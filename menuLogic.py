@@ -20,7 +20,7 @@ class MenuLogic:
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
-            MainWindow.close()
+            MainWindow.hide()
         else:
             self.setupUi(MainWindow)
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
@@ -34,7 +34,7 @@ class MenuLogic:
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
-            MainWindow.close()
+            MainWindow.hide()
         else:
             self.setupUi(MainWindow)
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")

@@ -8,6 +8,7 @@ class GameWindow(QMainWindow):
         super().__init__()
 
         self.ui = ui
+        self.MainWindow = MainWindow
 
         # Adds a side menu to the middle of the match
 
@@ -41,13 +42,12 @@ class GameWindow(QMainWindow):
         self.center()
 
     def show_main_menu(self, MainWindow):
-        original_geometry = MainWindow.save_geometry()
         self.close()
-        MainWindow.setupUi(self)
-        self.setGeometry(original_geometry)
-        self.setCentralWidget(MainWindow.centralwidget)
-        self.center()
-        self.show()
+        self.MainWindow.show()
+        #MainWindow.setupUi(self)
+        #self.setCentralWidget(MainWindow.centralwidget)
+        #self.center()
+        #self.show()
 
     def center(self):
         qr = self.frameGeometry()

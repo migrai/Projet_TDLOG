@@ -12,6 +12,8 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
+        self.difficultyMod = 0
+
         # Adds a vertical layout to the main window
         vertical_layout = QtWidgets.QVBoxLayout(self.centralwidget)
 
@@ -47,31 +49,31 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuOptions = QtWidgets.QMenu(self.menubar)
         self.menuOptions.setObjectName("menuFile")
-        self.menuEdit = QtWidgets.QMenu(self.menubar)
-        self.menuEdit.setObjectName("menuEdit")
+        self.menuDiff = QtWidgets.QMenu(self.menubar)
+        self.menuDiff.setObjectName("menuDiff")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionCopy = QtWidgets.QAction(MainWindow)
-        self.actionCopy.setObjectName("actionCopy")
-        self.actionPaste = QtWidgets.QAction(MainWindow)
-        self.actionPaste.setObjectName("actionPaste")
+        self.Diffrand = QtWidgets.QAction(MainWindow)
+        self.Diffrand.setObjectName("Diffrand")
+        self.DiffbestMove = QtWidgets.QAction(MainWindow)
+        self.DiffbestMove.setObjectName("DiffbestMove")
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
 
         self.menuOptions.addAction(self.actionSave)
-        self.menuEdit.addAction(self.actionCopy)
-        self.menuEdit.addAction(self.actionPaste)
+        self.menuDiff.addAction(self.Diffrand)
+        self.menuDiff.addAction(self.DiffbestMove)
         self.menubar.addAction(self.menuOptions.menuAction())
-        self.menubar.addAction(self.menuEdit.menuAction())
+        self.menubar.addAction(self.menuDiff.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         self.actionSave.triggered.connect(lambda: self.clicked("Save was clicked"))
-        self.actionCopy.triggered.connect(lambda: self.clicked("Copy was clicked"))
-        self.actionPaste.triggered.connect(lambda: self.clicked("Paste was clicked"))
+        self.Diffrand.triggered.connect(lambda: self.clicked("Easy mode was clicked"))
+        self.DiffbestMove.triggered.connect(lambda: self.clicked("Hard mode was clicked"))
         self.morpion_button.clicked.connect(
             lambda: MenuLogic.morpion_clicked(self, MainWindow)
             )
@@ -88,11 +90,11 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "3Morpion"))
         self.label.setText(_translate("MainWindow", "Main Menu"))
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
-        self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
-        self.actionCopy.setText(_translate("MainWindow", "Copy"))
-        self.actionCopy.setShortcut(_translate("MainWindow", "Ctrl+C"))
-        self.actionPaste.setText(_translate("MainWindow", "Paste"))
-        self.actionPaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
+        self.menuDiff.setTitle(_translate("MainWindow", "Difficulty"))
+        self.Diffrand.setText(_translate("MainWindow", "Easy"))
+        self.Diffrand.setShortcut(_translate("MainWindow", "Ctrl+1"))
+        self.DiffbestMove.setText(_translate("MainWindow", "Hard"))
+        self.DiffbestMove.setShortcut(_translate("MainWindow", "Ctrl+2"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         
