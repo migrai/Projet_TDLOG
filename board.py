@@ -29,6 +29,7 @@ class Board(QWidget):
         self.setCursor(Qt.SizeAllCursor)
         # Create the matrix to represent the board
         self.table = [[None] * 9 for _ in range(9)]
+        self.square = [[" "] * 9 for _ in range(9)]
         self.list_forbidden_squares = []
         self.last_square = None
         self.big_square_table = [[None for i in range(3)] for j in range(3)]  # 3x3 of big squares
@@ -83,7 +84,6 @@ class Board(QWidget):
     def get_block_color(self, row, col):
         # Return alternating colors for the blocks
         return "lightgray" if (row + col) % 2 == 0 else "gray"
-
     
     def disable_buttons(self): 
         # Désactive les boutons aux coordonnées spécifiées
@@ -101,7 +101,15 @@ class Board(QWidget):
                 self.table[row][col].setEnabled(False)    
     
     def possible_moves(self): # retourne tous les coups possibles 
-        return ([(row,col) for row in range(9) for col in range(9) if not ((row, col) in self.list_forbidden_squares or (row,col) in game.forbidden_moves_for_current_player(self.last_square,self.big_square_table)) ])
+        return (
+            [
+                (row,col) for row in range(9) for col in range(9)
+                if not (
+                    (row, col) in self.list_forbidden_squares
+                    or (row,col) in game.forbidden_moves_for_current_player(self.last_square,self.big_square_table)
+                )
+            ]
+        )
 
     def create_big_button(self,x,y) : #créé la grosse case au point (x,y)
         button_size = 293
@@ -122,6 +130,7 @@ class Board(QWidget):
         # Function to be called as the button is clicked
         #print(self.list_forbidden_squares)
         list_possible_moves = self.possible_moves()
+        
         #print(list_possible_moves,len(list_possible_moves))
         if (row, col) in list_possible_moves: # Check if the button is empty
             self.table[row][col].setText(self.current_player)
@@ -130,14 +139,16 @@ class Board(QWidget):
             )
             # Disable buttons associated with forbidden squares
             self.list_forbidden_squares.append((row,col))
+            self.square[row][col] = self.current_player
+            #print(self.square)
 
             # Toggle player
             self.last_square = (row,col)
             self.nbr_square_in_bigsquare[row//3][col//3]+=1
-            #print(game.current_big_square(self.last_square,self.table))
-            #print(game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player))
-
-            if game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player):#verifie si le grand carré a été gagné
+            #print(game.current_big_square(self.last_square,self.square))
+            #print(game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player))
+            if game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player):#verifie si le grand carré a été gagné
+                self.nbr_square_in_bigsquare[row//3][col//3] = 9
                 for i in range(3):
                     for j in range(3):
                         if i == row//3 and j == col//3:
@@ -146,6 +157,7 @@ class Board(QWidget):
                                     row2, col2 = 3*i+k,3*j+l
                                     if not ((row2,col2) in self.list_forbidden_squares):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
                                         self.list_forbidden_squares.append((row2,col2))
+                                        
                 self.big_square_table[row//3][col//3]=self.current_player
                 #print(self.big_square_table)
                 self.create_big_button(row//3,col//3)
@@ -160,7 +172,7 @@ class Board(QWidget):
 
             for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
                 for j in range(9):
-                    if self.table[i][j].text() == "" :
+                    if self.table[i][j].text() == "" : # case vide
                         block_color = self.get_block_color(i // 3, j // 3)
                         self.table[i][j].setStyleSheet(f"background-color: {block_color}; border: 1px solid black"
                 )
@@ -169,7 +181,7 @@ class Board(QWidget):
                 self.table[i][j].setStyleSheet(f"background-color: {'yellow'}; border: 1px solid black")
             self.disable_buttons()
 
-            if self.nbr_square_in_bigsquare[row//3][col//3] ==9 and not game.is_winner(game.current_big_square(self.last_square,self.table),self.current_player): 
+            if self.nbr_square_in_bigsquare[row//3][col//3] ==9 and not game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player): 
                 self.color_pat_big_square(row//3,col//3)
 
             if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
@@ -178,13 +190,10 @@ class Board(QWidget):
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
-        if self.nb_players == 1 and is_player:
-            row, col = IA.IA_random(self.table, list_possible_moves)
-            self.button_click(row, col, is_player = False)
+            if self.nb_players == 1 and is_player:
+                row, col = IA.big_square_greedy(list_possible_moves, self.last_square, self.square, self.nbr_square_in_bigsquare)
+                self.button_click(row, col, is_player = False)
             
-
-
-
     def color_pat_big_square(self,x,y):
         button_size = 293
         grid = self.layout()
@@ -194,16 +203,7 @@ class Board(QWidget):
         grid.addWidget(btn, x*3 , 3*y)
         btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
         self.big_square_table[x][y]="égalité"
-            
-            
-
-    def update_ui(self):
-        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
-        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
-        #l =
-        
-        pass
-
+   
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     table = Board(nb_players = 1)
