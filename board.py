@@ -13,16 +13,20 @@ from PyQt5.QtWidgets import (
     QDesktopWidget,
     QMenuBar,
     QAction,
+    QMessageBox
 )
 
 from PyQt5.QtCore import Qt
 
 class Board(QWidget):
-    def __init__(self, nb_players):
+    def __init__(self, nb_players, player_list, MainWindow, boardcontainer):
         super().__init__()
         self.initUI()
         self.nb_players = nb_players
-
+        self.player_list = player_list
+        self.MainWindow = MainWindow
+        self.boardcontainer = boardcontainer
+        
     def initUI(self):
         grid = QGridLayout()
         self.setLayout(grid)
@@ -165,10 +169,12 @@ class Board(QWidget):
                 if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
                     self.disable_all_buttons()
                     print(self.current_player)  
+                    self.show_winner_message()
             list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
             
             if len(self.list_forbidden_squares)==81 :
                 print("égalité")
+                self.show_egalite_message()
 
             for i in range(9): # donne aux cases leur couleur de départ (gris ou gris clair)
                 for j in range(9):
@@ -203,7 +209,52 @@ class Board(QWidget):
         grid.addWidget(btn, x*3 , 3*y)
         btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
         self.big_square_table[x][y]="égalité"
-   
+            
+            
+
+    def update_ui(self):
+        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
+        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
+        #l =
+        
+        pass
+
+    def show_winner_message(self):
+        if self.current_player == "X":
+            self.current_player = self.player_list[0]
+        else:
+            self.current_player = self.player_list[1]
+        winner_message = QMessageBox()
+        winner_message.setWindowTitle("Game Over")
+        winner_message.setText(f"Player {self.current_player} won!")
+
+        back_to_menu_button = winner_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        exit_button = winner_message.addButton("Exit Game", QMessageBox.RejectRole)
+
+        winner_message.exec_()
+
+        if winner_message.clickedButton() == back_to_menu_button:
+            self.MainWindow.show()
+            self.boardcontainer.close()
+        elif winner_message.clickedButton() == exit_button:
+            self.boardcontainer.close()
+
+    def show_egalite_message(self):
+        egalite_message = QMessageBox()
+        egalite_message.setWindowTitle("Game Over")
+        egalite_message.setText(f"No player has won! It's a draw")
+
+        back_to_menu_button = egalite_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        exit_button = egalite_message.addButton("Exit Game", QMessageBox.RejectRole)
+
+        egalite_message.exec_()
+
+        if egalite_message.clickedButton() == back_to_menu_button:
+            self.MainWindow.show()
+            self.boardcontainer.close()
+        elif egalite_message.clickedButton() == exit_button:
+            self.boardcontainer.close()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     table = Board(nb_players = 1)
