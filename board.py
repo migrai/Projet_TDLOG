@@ -117,7 +117,7 @@ class Board(QWidget):
         )
 
     def create_big_button(self,x,y) : #créé la grosse case au point (x,y)
-        button_size = 293
+        button_size = 295
         grid = self.layout()
         btn = QPushButton("", self)
         btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -205,7 +205,7 @@ class Board(QWidget):
                 self.button_click(row, col, is_player= False)
             
     def color_pat_big_square(self,x,y):
-        button_size = 293
+        button_size = 295
         grid = self.layout()
         btn = QPushButton("", self)
         btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
