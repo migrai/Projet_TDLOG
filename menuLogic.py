@@ -4,19 +4,20 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 nb_players = None
 class MenuLogic:
-    def __init__(self, ui, MainWindow):
+    def __init__(self, ui, MainWindow, diff_mod):
         self.ui = ui
         self.MainWindow = MainWindow
         self.nb_players = None
         self.player_list = None
+        self.diff_mod = diff_mod
 
-    def play_alone(self, MainWindow, type_jeu):
+    def play_alone(self, MainWindow, type_jeu, diff_mod):
         nb_players = 1
         # Implement logic for one player (IA)
         ok1 = MenuLogic.name_player(self, MainWindow)
         print(ok1)
         if ok1:
-            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow)
+            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow, diff_mod)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -26,11 +27,11 @@ class MenuLogic:
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
         pass
 
-    def play_two_players(self, MainWindow, type_jeu):
+    def play_two_players(self, MainWindow, type_jeu, diff_mod):
         nb_players = 2
         ok1, ok2 = MenuLogic.name_players(self, MainWindow)
         if ok1 and ok2:
-            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow)
+            self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow, diff_mod)
             self.game_window.show()
             self.game_window.resize(900, 900)
             self.game_window.center()
@@ -39,8 +40,14 @@ class MenuLogic:
             self.setupUi(MainWindow)
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
             
-    def morpion_clicked(self, MainWindow):
-        
+    def morpion_clicked(self, MainWindow, diff_mod):
+        self.menuDiff.removeAction(self.Diffrand)
+        self.menuDiff.removeAction(self.DiffbestMove)
+        self.menuOptions.setTitle("Options")
+        if diff_mod == 0:
+            self.menuDiff.setTitle("Current difficulty - Easy")
+        else:
+            self.menuDiff.setTitle("Current difficulty - Hard")
         self.vertical_layout.removeWidget(self.morpion_button)
         self.vertical_layout.removeWidget(self.meta_button)
         self.vertical_layout.removeWidget(self.exit_button)
@@ -63,14 +70,20 @@ class MenuLogic:
         type_jeu = 1
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod))
         self.exit_button.clicked.connect(MainWindow.close)
 
         return None
     
-    def meta_morpion_clicked(self, MainWindow):
-        
+    def meta_morpion_clicked(self, MainWindow, diff_mod):
+        self.menuDiff.removeAction(self.Diffrand)
+        self.menuDiff.removeAction(self.DiffbestMove)
+        self.menuOptions.setTitle("Options")
+        if diff_mod == 0:
+            self.menuDiff.setTitle("Current difficulty - Easy")
+        else:
+            self.menuDiff.setTitle("Current difficulty - Hard")
         self.vertical_layout.removeWidget(self.morpion_button)
         self.vertical_layout.removeWidget(self.meta_button)
         self.vertical_layout.removeWidget(self.exit_button)
@@ -93,8 +106,8 @@ class MenuLogic:
         type_jeu = 2
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod))
         self.exit_button.clicked.connect(MainWindow.close)
 
         return None
@@ -106,6 +119,7 @@ class MenuLogic:
         self.actionNew.triggered.connect(lambda: self.setupUi(MainWindow))
         self.actionNew.setText("Back to Main Menu")
         self.actionNew.setShortcut("Ctrl+N")
+
         return None
     def name_player(self, MainWindow):
         # Use QInputDialog to get names of two players

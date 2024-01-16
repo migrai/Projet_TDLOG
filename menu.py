@@ -59,10 +59,7 @@ class Ui_MainWindow(object):
         self.Diffrand.setObjectName("Diffrand")
         self.DiffbestMove = QtWidgets.QAction(MainWindow)
         self.DiffbestMove.setObjectName("DiffbestMove")
-        self.actionSave = QtWidgets.QAction(MainWindow)
-        self.actionSave.setObjectName("actionSave")
 
-        self.menuOptions.addAction(self.actionSave)
         self.menuDiff.addAction(self.Diffrand)
         self.menuDiff.addAction(self.DiffbestMove)
         self.menubar.addAction(self.menuOptions.menuAction())
@@ -71,14 +68,13 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.actionSave.triggered.connect(lambda: self.clicked("Save was clicked"))
-        self.Diffrand.triggered.connect(lambda: self.clicked("Easy mode was clicked"))
-        self.DiffbestMove.triggered.connect(lambda: self.clicked("Hard mode was clicked"))
+        self.Diffrand.triggered.connect(lambda: self.set_diff(0))
+        self.DiffbestMove.triggered.connect(lambda: self.set_diff(1))
         self.morpion_button.clicked.connect(
-            lambda: MenuLogic.morpion_clicked(self, MainWindow)
+            lambda: MenuLogic.morpion_clicked(self, MainWindow, self.difficultyMod)
             )
         self.meta_button.clicked.connect(
-            lambda: MenuLogic.meta_morpion_clicked(self, MainWindow)
+            lambda: MenuLogic.meta_morpion_clicked(self, MainWindow, self.difficultyMod)
             )
         self.exit_button.clicked.connect(MainWindow.close)
     
@@ -89,14 +85,12 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "3Morpion"))
         self.label.setText(_translate("MainWindow", "Main Menu"))
-        self.menuOptions.setTitle(_translate("MainWindow", "Options"))
+        self.menuOptions.setTitle(_translate("MainWindow", "Welcome"))
         self.menuDiff.setTitle(_translate("MainWindow", "Difficulty"))
         self.Diffrand.setText(_translate("MainWindow", "Easy"))
         self.Diffrand.setShortcut(_translate("MainWindow", "Ctrl+1"))
         self.DiffbestMove.setText(_translate("MainWindow", "Hard"))
         self.DiffbestMove.setShortcut(_translate("MainWindow", "Ctrl+2"))
-        self.actionSave.setText(_translate("MainWindow", "Save"))
-        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         
 
     def clicked(self, text):
@@ -111,6 +105,11 @@ class Ui_MainWindow(object):
 
     def save_geometry(self):
         return self.original_geometry
+    
+    def set_diff(self, diff):
+        self.difficultyMod = diff
+        print(self.difficultyMod)
+        return self.difficultyMod
 
 if __name__ == "__main__":
 

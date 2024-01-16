@@ -19,13 +19,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 class Board(QWidget):
-    def __init__(self, nb_players, player_list, MainWindow, boardcontainer):
+    def __init__(self, nb_players, player_list, MainWindow, boardcontainer, diff_mod):
         super().__init__()
         self.initUI()
         self.nb_players = nb_players
         self.player_list = player_list
         self.MainWindow = MainWindow
         self.boardcontainer = boardcontainer
+        self.diff_mod = diff_mod
         
     def initUI(self):
         grid = QGridLayout()
@@ -196,9 +197,12 @@ class Board(QWidget):
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
-            if self.nb_players == 1 and is_player:
+            if self.nb_players == 1 and is_player and self.diff_mod ==1 :
                 row, col = IA.big_square_greedy(list_possible_moves, self.last_square, self.square, self.nbr_square_in_bigsquare)
                 self.button_click(row, col, is_player = False)
+            elif self.nb_players ==1 and is_player and self.diff_mod == 0:
+                row, col = IA.IA_random(self.square, list_possible_moves)
+                self.button_click(row, col, is_player= False)
             
     def color_pat_big_square(self,x,y):
         button_size = 293
@@ -228,7 +232,7 @@ class Board(QWidget):
         winner_message.setWindowTitle("Game Over")
         winner_message.setText(f"Player {self.current_player} won!")
 
-        back_to_menu_button = winner_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        back_to_menu_button = winner_message.addButton("Back to Menu", QMessageBox.ActionRole)
         exit_button = winner_message.addButton("Exit Game", QMessageBox.RejectRole)
 
         winner_message.exec_()

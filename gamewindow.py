@@ -4,11 +4,12 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QDeskt
 from PyQt5.QtGui import QIcon
 
 class GameWindow(QMainWindow):
-    def __init__(self, ui, nb_players, type_jeu, player_list, MainWindow):
+    def __init__(self, ui, nb_players, type_jeu, player_list, MainWindow, diff_mod):
         super().__init__()
 
         self.ui = ui
         self.MainWindow = MainWindow
+        self.diff_mod = diff_mod
 
         # Adds a side menu to the middle of the match
 
@@ -25,9 +26,9 @@ class GameWindow(QMainWindow):
         match_menu.addAction(return_to_main_menu)
 
         if type_jeu == 2:
-            self.central_widget = Board(nb_players, player_list, MainWindow, self)
+            self.central_widget = Board(nb_players, player_list, MainWindow, self, self.diff_mod)
         else:
-            self.central_widget = Board_1D(nb_players, player_list, MainWindow, self)
+            self.central_widget = Board_1D(nb_players, player_list, MainWindow, self, self.diff_mod)
 
         # Set the layout for the main window
         main_layout = QVBoxLayout()

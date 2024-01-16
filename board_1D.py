@@ -19,13 +19,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 class Board_1D(QWidget):
-    def __init__(self,nb_players,player_list, MainWindow, boardcontainer):
+    def __init__(self,nb_players,player_list, MainWindow, boardcontainer, diff_mod):
         super().__init__()
         self.initUI()
         self.nb_players = nb_players
         self.player_list = player_list
         self.MainWindow = MainWindow
         self.boardcontainer = boardcontainer
+        self.diff_mod = diff_mod
 
     def initUI(self):
         grid = QGridLayout()
@@ -136,10 +137,14 @@ class Board_1D(QWidget):
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
-        if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 :
+        if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 and self.diff_mod == 1 :
             
             row, col = IA.find_best_move_1D(self.square, list_possible_moves)
-            #row, col = IA.IA_random(self.square,list_possible_moves)
+            self.table[row][col].setText(self.current_player)
+            self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
+            self.button_click(row, col, is_player = False)
+        elif self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 and self.diff_mod == 0 :
+            row, col = IA.IA_random(self.square,list_possible_moves)
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
             self.button_click(row, col, is_player = False)
@@ -153,7 +158,7 @@ class Board_1D(QWidget):
         winner_message.setWindowTitle("Game Over")
         winner_message.setText(f"Player {self.current_player} won!")
 
-        back_to_menu_button = winner_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        back_to_menu_button = winner_message.addButton("Back to Menu", QMessageBox.ActionRole)
         exit_button = winner_message.addButton("Exit Game", QMessageBox.RejectRole)
 
         winner_message.exec_()
