@@ -31,7 +31,7 @@ class Board_1D(QWidget):
         self.list_forbidden_squares = []
         self.last_square = None
         self.table = [[None for i in range(3)] for j in range(3)]  # 3x3 space for buttons
-        self.square = [[None for i in range(3)] for j in range(3)] #liste des cases 
+        self.square = [[None for i in range(3)] for j in range(3)] # liste des cases 
         # Set a fixed size for the buttons and the window
         button_size = 300
         self.setFixedSize(button_size * 3, button_size * 3)
@@ -131,8 +131,9 @@ class Board_1D(QWidget):
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
         if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 :
-            row, col = IA.find_best_move_1D(self.square, list_possible_moves)
             
+            row, col = IA.find_best_move_1D(self.square, list_possible_moves)
+            #row, col = IA.IA_random(self.square,list_possible_moves)
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
             self.button_click(row, col, is_player = False)
