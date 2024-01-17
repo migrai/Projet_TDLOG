@@ -51,7 +51,46 @@ def find_best_move_1D(board,possible_moves):
                 best_val = move_val
 
         return best_move
+        
+def win_instantly(board, possible_moves):
+    # fonction qui vérifie si l'IA peut prendre la grosse case instantanément
+    
+    list_greedy_moves = []
+    for index, coord in enumerate(possible_moves):
+        i,j = coord
+        board[i][j] = 'O'
+        if game.is_winner(board,'O'): 
+            print ("can win square instantly !")
+            list_greedy_moves.append((i,j))
+        board[i][j] = ' ' # remettre le board dans l'état initial.
 
+    if len(list_greedy_moves) != 0:
+        index_res = random.randint(0,len(list_greedy_moves)-1) # prendre un move au hasard parmi ceux qui 
+                                                                # prennent la grosse case
+        return list_greedy_moves[index_res]
+    else :
+        return False
+
+def lose_instantly(board, possible_moves):
+    # fonction qui vérifie si l'IA peut prendre la grosse case instantanément
+    
+    list_greedy_moves = []
+    for index, coord in enumerate(possible_moves):
+        i,j = coord
+        board[i][j] = 'X'
+        if game.is_winner(board,'X'): 
+            print ("can lose square instantly !")
+            list_greedy_moves.append((i,j))
+        board[i][j] = ' ' # remettre le board dans l'état initial.
+
+    if len(list_greedy_moves) != 0:
+        index_res = random.randint(0,len(list_greedy_moves)-1) # prendre un move au hasard parmi ceux qui 
+                                                                # prennent la grosse case
+        
+        return list_greedy_moves[index_res]
+    else :
+        return False
+    
 def find_best_move_big_square(board,possible_moves):
     # Trouve le meilleur mouvement en utilisant l'algorithme Minimax dans le morpion 1D. Mais si l'IA a deux cases alignées
         # et rien dans la 3ème case, elle joue le move pour gagner la case (le problème est que l'IA find_best_move_1D
@@ -59,16 +98,16 @@ def find_best_move_big_square(board,possible_moves):
         # sans que le joueur adverse puisse jouer avant.
 
         # étape 1 : vérifier si on peut prendre la grosse case instantanément
-        for index, coord in enumerate(possible_moves):
-            i,j = coord
-            board[i][j] = 'O'
-            if game.is_winner(board,'O'):
-                print ("can win instantly !")
-                return i,j
-            board[i][j] = ' ' # remettre le board dans l'état initial.
+        if win_instantly(board, possible_moves) != False:
+            return win_instantly(board, possible_moves)
+        
+        # étape 2 : vérifier si le joueur adverse peut prendre la grosse case instantanément
+        if lose_instantly(board, possible_moves) != False:
+            return lose_instantly(board, possible_moves)
 
         # étape 2 : si on ne peut pas gagner instantanément, on cherche le meilleur move.
-        return find_best_move_1D(board,possible_moves)
+        else:
+            return find_best_move_1D(board,possible_moves)
 
     
 def big_square_greedy(possible_moves, last_square, board_state, nbr_square_in_bigsquare):
@@ -92,5 +131,19 @@ def big_square_greedy(possible_moves, last_square, board_state, nbr_square_in_bi
         return row + 3*x, col + 3*y
     
     else : # le big square est plein
+        print('full big_square')
+        # on parcourt l'ensemble des autres big_square pour voir si l'un d'entre eux est gagnable immédiatement
+        list_greedy_moves = []
+        for i_big in range(3):
+            for j_big in range(3):
+                if nbr_square_in_bigsquare[i_big][j_big] < 9:
+                    possible_moves_in_big_square = game.possible_moves_in_big_square(possible_moves,i_big,j_big)
+                    board_big_square = game.current_big_square_state(board_state,i_big,j_big)
+                    if win_instantly(board_big_square, possible_moves_in_big_square) != False:
+                        move_0_2 = win_instantly(board_big_square, possible_moves_in_big_square) # coords in [0,2]x[0,2]
+                        move_0_8 = (move_0_2[0]+3*i_big, move_0_2[1]+3*j_big)
+                        list_greedy_moves.append(move_0_8)
+        if len(list_greedy_moves) > 0: # un move gagnant une grosse case existe
+            return list_greedy_moves[random.randint(0,len(list_greedy_moves)-1)] # on prend un move gagnant au hasard
         return IA_random(board_state, possible_moves)
         
