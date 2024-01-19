@@ -27,6 +27,7 @@ class Board_1D(QWidget):
         self.MainWindow = MainWindow
         self.boardcontainer = boardcontainer
         self.diff_mod = diff_mod
+        self.player_history = Board_1D.load_players(self)
 
     def initUI(self):
         grid = QGridLayout()
@@ -125,6 +126,7 @@ class Board_1D(QWidget):
                 self.disable_all_buttons()
                 print(self.current_player)  
                 self.show_winner_message()
+                Board_1D.update_score(self.current_player, self.player_history)
             if len(self.list_forbidden_squares)==9 :
                 print("égalité")
                 self.show_egalite_message()
@@ -184,6 +186,28 @@ class Board_1D(QWidget):
             self.boardcontainer.close()
         elif egalite_message.clickedButton() == exit_button:
             self.boardcontainer.close()
+
+    def load_players(self):
+        try:
+            with open('players.txt', 'r') as file:
+                lines = file.readlines()
+                players = {}
+                for linha in lines:
+                    player, score = linha.strip().split(':')
+                    players[player] = int(score)
+                return players
+        except FileNotFoundError:
+            return {}
+        
+    def update_score(player, player_history):
+        if player in player_history:
+            player_history[player] += 1
+        else:
+            pass
+
+        with open('players.txt', 'w') as file:
+            for player, score in player_history.items():
+                file.write(f'{player}:{score}\n')
    
 if __name__ == "__main__":
     app = QApplication(sys.argv)

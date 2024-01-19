@@ -4,17 +4,18 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 nb_players = None
 class MenuLogic:
-    def __init__(self, ui, MainWindow, diff_mod):
+    def __init__(self, ui, MainWindow, diff_mod, player_history):
         self.ui = ui
         self.MainWindow = MainWindow
         self.nb_players = None
         self.player_list = None
         self.diff_mod = diff_mod
+        self.player_history = player_history
 
-    def play_alone(self, MainWindow, type_jeu, diff_mod):
+    def play_alone(self, MainWindow, type_jeu, diff_mod, player_history):
         nb_players = 1
         # Implement logic for one player (IA)
-        ok1 = MenuLogic.name_player(self, MainWindow)
+        ok1 = MenuLogic.name_player(self, MainWindow, player_history)
         print(ok1)
         if ok1:
             self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow, diff_mod)
@@ -27,9 +28,9 @@ class MenuLogic:
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
         pass
 
-    def play_two_players(self, MainWindow, type_jeu, diff_mod):
+    def play_two_players(self, MainWindow, type_jeu, diff_mod, player_history):
         nb_players = 2
-        ok1, ok2 = MenuLogic.name_players(self, MainWindow)
+        ok1, ok2 = MenuLogic.name_players(self, MainWindow, player_history)
         if ok1 and ok2:
             self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow, diff_mod)
             self.game_window.show()
@@ -40,7 +41,7 @@ class MenuLogic:
             self.setupUi(MainWindow)
             QMessageBox.warning(MainWindow, "Failed to start game", "Player name input canceled or empty.")
             
-    def morpion_clicked(self, MainWindow, diff_mod):
+    def morpion_clicked(self, MainWindow, diff_mod, player_history):
         self.menuDiff.removeAction(self.Diffrand)
         self.menuDiff.removeAction(self.DiffbestMove)
         self.menuOptions.setTitle("Options")
@@ -51,6 +52,7 @@ class MenuLogic:
         self.vertical_layout.removeWidget(self.morpion_button)
         self.vertical_layout.removeWidget(self.meta_button)
         self.vertical_layout.removeWidget(self.exit_button)
+        self.vertical_layout.removeWidget(self.leaderboard_button)
 
         # Adds the new buttons to the layout
         MenuLogic.change_options_bar(self, MainWindow)
@@ -63,6 +65,10 @@ class MenuLogic:
         self.two_players_button.setIcon(QtGui.QIcon("icon_two_players.png"))
         self.vertical_layout.addWidget(self.two_players_button)
 
+        self.leaderboard_button = QtWidgets.QPushButton("Leaderboard", self.centralwidget)
+        self.leaderboard_button.setIcon(QtGui.QIcon("icon_leaderboard.png"))
+        self.vertical_layout.addWidget(self.leaderboard_button)
+
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
         self.vertical_layout.addWidget(self.exit_button)
@@ -70,13 +76,14 @@ class MenuLogic:
         type_jeu = 1
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod, player_history))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod, player_history))
         self.exit_button.clicked.connect(MainWindow.close)
+        self.leaderboard_button.clicked.connect(lambda: self.view_players())
 
         return None
     
-    def meta_morpion_clicked(self, MainWindow, diff_mod):
+    def meta_morpion_clicked(self, MainWindow, diff_mod, player_history):
         self.menuDiff.removeAction(self.Diffrand)
         self.menuDiff.removeAction(self.DiffbestMove)
         self.menuOptions.setTitle("Options")
@@ -87,6 +94,7 @@ class MenuLogic:
         self.vertical_layout.removeWidget(self.morpion_button)
         self.vertical_layout.removeWidget(self.meta_button)
         self.vertical_layout.removeWidget(self.exit_button)
+        self.vertical_layout.removeWidget(self.leaderboard_button)
 
         # Adds the new buttons to the layout
         MenuLogic.change_options_bar(self, MainWindow)
@@ -99,6 +107,10 @@ class MenuLogic:
         self.two_players_button.setIcon(QtGui.QIcon("icon_two_players.png"))
         self.vertical_layout.addWidget(self.two_players_button)
 
+        self.leaderboard_button = QtWidgets.QPushButton("Leaderboard", self.centralwidget)
+        self.leaderboard_button.setIcon(QtGui.QIcon("icon_leaderboard.png"))
+        self.vertical_layout.addWidget(self.leaderboard_button)
+
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
         self.vertical_layout.addWidget(self.exit_button)
@@ -106,9 +118,10 @@ class MenuLogic:
         type_jeu = 2
 
         # Connects the signals from the added buttons to the desired functions
-        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod))
-        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod))
+        self.singleplayer_button.clicked.connect(lambda: MenuLogic.play_alone(self, MainWindow, type_jeu, diff_mod, player_history))
+        self.two_players_button.clicked.connect(lambda: MenuLogic.play_two_players(self, MainWindow, type_jeu, diff_mod, player_history))
         self.exit_button.clicked.connect(MainWindow.close)
+        self.leaderboard_button.clicked.connect(lambda: self.view_players())
 
         return None
     
@@ -121,10 +134,31 @@ class MenuLogic:
         self.actionNew.setShortcut("Ctrl+N")
 
         return None
-    def name_player(self, MainWindow):
-        # Use QInputDialog to get names of two players
-        player1_name, ok1 = QInputDialog.getText(MainWindow, "Player 1 Name", "Enter Player 1's Name:")
-        # Check if the player provided their name
+    def name_player(self, MainWindow, player_history):
+        # Use QInputDialog to get name of one player
+        ok1 = False
+        text_popup = 'Player history:\n'
+        for player in player_history.items():
+            text_popup += f'{player}\n'
+
+        dialog = QInputDialog(MainWindow)
+        dialog.setLabelText(text_popup)
+
+        choice, ok1 = QInputDialog.getItem(MainWindow, 'Choose a player', 'Select an existing player 1 ?', self.player_history.keys(), 0, False)
+
+        if ok1:
+            print(f'Você escolheu jogar com {choice}')
+            player1_name = choice
+            # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
+        else:
+            new_player1, ok1 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            if new_player1 == "":
+                new_player1 = "Guest1"
+            if ok1 and new_player1:
+                print(f'Você criou um novo jogador: {new_player1}')
+                self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
+                self.save_players(new_player1, 0)
+                player1_name = new_player1
         if ok1:
             # Now we can use player1_name and player2_name as needed
             print(f"Player 1's name: {player1_name}")
@@ -132,10 +166,54 @@ class MenuLogic:
         
         return ok1
 
-    def name_players(self, MainWindow):
+    def name_players(self, MainWindow, player_history):
         # Use QInputDialog to get names of two players
-        player1_name, ok1 = QInputDialog.getText(MainWindow, "Player 1 Name", "Enter Player 1's Name:")
-        player2_name, ok2 = QInputDialog.getText(MainWindow, "Player 2 Name", "Enter Player 2's Name:")
+        ok1, ok2 = False, False
+        text_popup = 'Player history:\n'
+        for player in player_history.items():
+            text_popup += f'{player}\n'
+
+        dialog = QInputDialog(MainWindow)
+        dialog.setLabelText(text_popup)
+
+        choice, ok1 = QInputDialog.getItem(MainWindow, 'Choose a player', 'Select an existing player 1 ?', self.player_history.keys(), 0, False)
+
+        if ok1:
+            print(f'Você escolheu jogar com {choice}')
+            player1_name = choice
+            # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
+        else:
+            new_player1, ok1 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            if new_player1 == "":
+                new_player1 = "Guest1"
+            if ok1 and new_player1:
+                print(f'Você criou um novo jogador: {new_player1}')
+                self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
+                self.save_players(new_player1, 0)
+                player1_name = new_player1
+        if ok1:
+            text_popup = 'Player history:\n'
+            for player in self.player_history.items():
+                text_popup += f'{player}\n'
+            
+            dialog = QInputDialog(MainWindow)
+            dialog.setLabelText(text_popup)
+            
+            choice2, ok2 = QInputDialog.getItem(MainWindow, 'Choose a player 2', 'Select an existing player 2 ?', self.player_history.keys(), 0, False)
+
+        if ok2 and ok1:
+            if choice2:
+                print(f'Você escolheu jogar com {choice2}')
+                player2_name = choice2
+        elif ok1:
+            new_player2, ok2 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            if new_player2 == "":
+                new_player2 = "Guest2"
+            if ok2 and new_player2:
+                print(f'Você criou um novo jogador: {new_player2}')
+                self.save_players(new_player2, 0)
+                player2_name = new_player2
+
 
         # Check if both players provided names
         if ok1 and ok2:
@@ -143,5 +221,6 @@ class MenuLogic:
             print(f"Player 1's name: {player1_name}")
             print(f"Player 2's name: {player2_name}")
             self.player_list = [player1_name, player2_name]
-
-        return [ok1, ok2]
+            return [ok1, ok2]
+        else:
+            return [False, False]
