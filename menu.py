@@ -11,6 +11,7 @@ class Ui_MainWindow(object):
         MainWindow.resize(600, 400)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.player_history = Ui_MainWindow.load_players(self)
 
         self.difficultyMod = 0
 
@@ -37,6 +38,11 @@ class Ui_MainWindow(object):
         )
         self.meta_button.setIcon(QtGui.QIcon("icon_2.png"))
         vertical_layout.addWidget(self.meta_button)
+
+        self.leaderboard_button = QtWidgets.QPushButton("Leaderboard", self.centralwidget)
+        self.leaderboard_button.setIcon(QtGui.QIcon("icon_leaderboard.png"))
+        vertical_layout.addWidget(self.leaderboard_button)
+        self.leaderboard_button.clicked.connect(lambda: self.view_players())
 
         self.exit_button = QtWidgets.QPushButton("Exit", self.centralwidget)
         self.exit_button.setIcon(QtGui.QIcon("icon_exit.png"))
@@ -71,10 +77,10 @@ class Ui_MainWindow(object):
         self.Diffrand.triggered.connect(lambda: self.set_diff(0))
         self.DiffbestMove.triggered.connect(lambda: self.set_diff(1))
         self.morpion_button.clicked.connect(
-            lambda: MenuLogic.morpion_clicked(self, MainWindow, self.difficultyMod)
+            lambda: MenuLogic.morpion_clicked(self, MainWindow, self.difficultyMod, self.player_history)
             )
         self.meta_button.clicked.connect(
-            lambda: MenuLogic.meta_morpion_clicked(self, MainWindow, self.difficultyMod)
+            lambda: MenuLogic.meta_morpion_clicked(self, MainWindow, self.difficultyMod, self.player_history)
             )
         self.exit_button.clicked.connect(MainWindow.close)
     
@@ -110,6 +116,50 @@ class Ui_MainWindow(object):
         self.difficultyMod = diff
         print(self.difficultyMod)
         return self.difficultyMod
+    
+    def load_players(self):
+        try:
+            with open('players.txt', 'r') as file:
+                lines = file.readlines()
+                players = {}
+                for linha in lines:
+                    player, score = linha.strip().split(':')
+                    players[player] = int(score)
+                return players
+        except FileNotFoundError:
+            return {}
+        
+    def save_players(self, new_player, new_score):
+        if new_player in self.player_history:
+            pass
+        else:
+            # Se o jogador não existe, adiciona o novo jogador
+            self.player_history[new_player] = new_score
+
+        with open('players.txt', 'w') as file:
+            for player, score in self.player_history.items():
+                file.write(f'{player}:{score}\n')
+
+    def view_players(self):
+        players_dialog = QtWidgets.QDialog()
+        players_dialog.setWindowTitle("Leaderboard - Names and wins")
+        players_dialog.setGeometry(100, 100, 400, 200)
+
+        layout = QtWidgets.QVBoxLayout(players_dialog)
+
+        try:
+            with open('players.txt', 'r') as file:
+                lines = file.readlines()
+                for line in lines:
+                    player, score = line.strip().split(':')
+                    label = QtWidgets.QLabel(f"{player}: {score}", players_dialog)
+                    layout.addWidget(label)
+
+        except FileNotFoundError:
+            label = QtWidgets.QLabel("No players found.", players_dialog)
+            layout.addWidget(label)
+
+        players_dialog.exec_()
 
 if __name__ == "__main__":
 
