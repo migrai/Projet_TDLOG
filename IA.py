@@ -1,10 +1,13 @@
 import random
 import game
 
+### EASY LEVEL (1D, 2D)
+
 def IA_random(table, list_possible_moves): #marche pour les deux dimensions possibles
     (row,col) = list_possible_moves[random.randint(0, len(list_possible_moves)-1)]
     return (row,col)
 
+### HARD LEVEL 1D
 def minimax(board, possible_moves, depth = 0, maximizing_player="O"):
     # Fonction Minimax pour évaluer tous les mouvements possibles et choisir le meilleur
     if game.is_winner(board, 'X'):
@@ -51,6 +54,8 @@ def find_best_move_1D(board,possible_moves):
                 best_val = move_val
 
         return best_move
+
+### MID LEVEL 2D
         
 def win_instantly(board, possible_moves):
     # fonction qui vérifie si l'IA peut prendre la grosse case instantanément
@@ -147,3 +152,227 @@ def big_square_greedy(possible_moves, last_square, board_state, nbr_square_in_bi
             return list_greedy_moves[random.randint(0,len(list_greedy_moves)-1)] # on prend un move gagnant au hasard
         return IA_random(board_state, possible_moves)
         
+### HARD MODE 2D
+    
+def minimax_2D(last_square,alpha,beta,board, board_big_square, possible_moves, forbidden_moves, depth ,score = 0 , maximizing_player="O" ):
+    # Fonction Minimax pour évaluer tous les mouvements possibles et choisir le meilleur
+    if depth <= 0 :
+        return score
+    elif game.is_winner(game.current_big_square(last_square,board),"X"):#verifie si le grand carré a été gagné
+        #print("entré", depth)
+        for i in range(3):
+            for j in range(3):
+                if i == last_square[0]//3 and j == last_square[1]//3:
+                    for k in range(3):
+                        for l in range(3):
+                            row2, col2 = 3*i+k,3*j+l
+                            if not ((row2,col2) in forbidden_moves):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
+                                forbidden_moves.append((row2,col2))
+        board_big_square[last_square[0]//3][last_square[1]//3]="X"
+        score -= 10
+        
+        if game.is_winner(board_big_square,"X"):#vérifie si le jeu est fini 
+            return -100
+    elif game.is_winner(game.current_big_square(last_square,board),"O"):#verifie si le grand carré a été gagné
+        for i in range(3):
+            for j in range(3):
+                if i == last_square[0]//3 and j == last_square[1]//3:
+                    for k in range(3):
+                        for l in range(3):
+                            row2, col2 = 3*i+k,3*j+l
+                            if not ((row2,col2) in forbidden_moves):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
+                                forbidden_moves.append((row2,col2))
+        board_big_square[last_square[0]//3][last_square[1]//3]="O"
+        score += 10
+        
+        if game.is_winner(board_big_square,"O"):#vérifie si le jeu est fini 
+            return 100
+    elif len(forbidden_moves) == 81 :
+        return 0
+    else : 
+        score += random.random()
+    if maximizing_player=="O":
+        max_eval = float('-inf')
+        #print(possible_moves)
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'O'
+            sauvegarde = possible_moves[:]
+            forbidden_moves.append(coord)
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            """
+            if depth !=1 :
+                print("profondeur : ", depth , "score : ", score, "joueur : ", maximizing_player)
+            """
+            eval = minimax_2D(coord,alpha,beta,board,board_big_square,possible_moves,forbidden_moves,score=score,depth=depth-1,maximizing_player="X")
+            board[i][j] = ' '
+            forbidden_moves.pop()
+            possible_moves = sauvegarde[:]
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break  # Élagage Alpha-Beta
+            max_eval = max(max_eval, eval)
+        return max_eval
+    else:
+        min_eval = float('inf')
+        #print(possible_moves)
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'X'
+            sauvegarde = possible_moves[:]
+            forbidden_moves.append(coord)
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            """depth !=1 :
+                print("profondeur : ", depth , "score : ", score, "joueur : ", maximizing_player)
+            """
+            eval = minimax_2D(coord,alpha,beta,board,board_big_square,possible_moves,forbidden_moves,score=score,depth=depth-1)
+            board[i][j] = ' '
+            forbidden_moves.pop()
+            possible_moves = sauvegarde[:]
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break  # Élagage Alpha-Beta
+            min_eval = min(min_eval, eval)
+        return min_eval
+
+"""
+def find_best_move_2D(last_square,board,board_big_square,possible_moves,forbidden_moves,depth=5):
+    # Trouve le meilleur mouvement en utilisant l'algorithme Minimax dans le morpion 1D
+        best_val = float('-inf')
+        best_move = (-1, -1)
+        alpha = float('-inf')
+        beta = float('inf')
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'O'
+            sauvegarde = possible_moves[:]
+            forbidden_moves.append(coord)
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            move_val = minimax_2D(last_square,alpha,beta,board,board_big_square,possible_moves,forbidden_moves,depth=4,maximizing_player="X")
+            #print("coup : ",(i,j),move_val)
+            board[i][j] = ' '
+            forbidden_moves.pop()
+            possible_moves = sauvegarde[:] 
+            if move_val > best_val:
+                best_move = (i, j)
+                best_val = move_val
+                #print(best_move,best_val)
+        print(possible_moves)
+        return best_move
+        """
+def alpha_beta(last_square,alpha,beta,board, board_big_square, possible_moves, forbidden_moves, depth ,score = 0 , maximizing_player="O" ):
+    # Fonction Minimax pour évaluer tous les mouvements possibles et choisir le meilleur
+    if depth <= 0 :
+        return score
+    elif game.is_winner(game.current_big_square(last_square,board),"X"):#verifie si le grand carré a été gagné
+        #print("entré", depth)
+        for i in range(3):
+            for j in range(3):
+                if i == last_square[0]//3 and j == last_square[1]//3:
+                    for k in range(3):
+                        for l in range(3):
+                            row2, col2 = 3*i+k,3*j+l
+                            if not ((row2,col2) in forbidden_moves):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
+                                forbidden_moves.append((row2,col2))
+        board_big_square[last_square[0]//3][last_square[1]//3]="X"
+        score -= 10
+        
+        if game.is_winner(board_big_square,"X"):#vérifie si le jeu est fini 
+            return -100
+    elif game.is_winner(game.current_big_square(last_square,board),"O"):#verifie si le grand carré a été gagné
+        for i in range(3):
+            for j in range(3):
+                if i == last_square[0]//3 and j == last_square[1]//3:
+                    for k in range(3):
+                        for l in range(3):
+                            row2, col2 = 3*i+k,3*j+l
+                            if not ((row2,col2) in forbidden_moves):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
+                                forbidden_moves.append((row2,col2))
+        board_big_square[last_square[0]//3][last_square[1]//3]="O"
+        score += 10
+        
+        if game.is_winner(board_big_square,"O"):#vérifie si le jeu est fini 
+            return 100
+    elif len(forbidden_moves)== 81 :
+        return 0
+    else : 
+        score += random.random()
+    if maximizing_player=="O":
+        max_eval = float('-inf')
+        #print(possible_moves)
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'O'
+            sauvegarde_p = possible_moves[:]
+            sauvegarde_f = forbidden_moves
+            forbidden_moves.append(coord)
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            """
+            if depth !=1 :
+                print("profondeur : ", depth , "score : ", score, "joueur : ", maximizing_player)
+            """
+            eval = alpha_beta(coord,alpha,beta,board,board_big_square,possible_moves,forbidden_moves,score=score,depth=depth-1,maximizing_player="X")
+            board[i][j] = ' ' 
+            possible_moves = sauvegarde_p[:]
+            forbidden_moves = sauvegarde_f[:]
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break  # Élagage Alpha-Beta
+            max_eval = max(max_eval, eval)
+        return max_eval
+    else:
+        min_eval = float('inf')
+        #print(possible_moves)
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'X'
+            sauvegarde_p = possible_moves[:]
+            sauvegarde_f = forbidden_moves
+            forbidden_moves.append(coord)
+            
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            """depth !=1 :
+                print("profondeur : ", depth , "score : ", score, "joueur : ", maximizing_player)
+            """
+            eval = alpha_beta(coord,alpha,beta,board,board_big_square,possible_moves,forbidden_moves,score=score,depth=depth-1)
+            board[i][j] = ' '
+            forbidden_moves = sauvegarde_f[:]
+            possible_moves = sauvegarde_p[:]
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break  # Élagage Alpha-Beta
+            min_eval = min(min_eval, eval)
+        return min_eval
+
+
+def find_best_move_2D(last_square,board,board_big_square,possible_moves,forbidden_moves,depth=5):
+    # Trouve le meilleur mouvement en utilisant l'algorithme Minimax dans le morpion 1D
+        best_val = float('-inf')
+        best_move = possible_moves[0]
+        alpha = float('-inf')
+        beta = float('inf')
+        print(possible_moves)
+        copy_board_big_square = board_big_square.copy()
+        for index, coord in enumerate(possible_moves):
+            i,j = coord
+            board[i][j] = 'O'
+            #print(board,index)
+            print(forbidden_moves,"index",index)
+            sauvegarde_p = possible_moves[:]
+            sauvegarde_f = forbidden_moves[:]
+            forbidden_moves.append(coord)
+            possible_moves = game.possible_moves(forbidden_moves,board_big_square,coord)
+            move_val = alpha_beta(last_square,alpha,beta,board,copy_board_big_square,possible_moves,forbidden_moves,depth,maximizing_player="X")
+            #print("coup : ",(i,j),move_val)
+            board[i][j] = ' '
+            forbidden_moves = sauvegarde_f[:]
+            possible_moves = sauvegarde_p[:] 
+            if move_val > best_val:
+                best_move = (i, j)
+                best_val = move_val
+                #print(best_move,best_val)
+            #print(board)
+            print(forbidden_moves)
+        #print(possible_moves)
+        print(forbidden_moves,"sortie_IA")
+        return best_move

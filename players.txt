@@ -1,2 +1,5 @@
-Guest1:0
+Guest1:2
 Guest2:0
+no:0
+go:0
+Miguel:3

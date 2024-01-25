@@ -151,7 +151,7 @@ class MenuLogic:
             player1_name = choice
             # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
         else:
-            new_player1, ok1 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            new_player1, ok1 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player1 == "":
                 new_player1 = "Guest1"
             if ok1 and new_player1:
@@ -183,7 +183,7 @@ class MenuLogic:
             player1_name = choice
             # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
         else:
-            new_player1, ok1 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            new_player1, ok1 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player1 == "":
                 new_player1 = "Guest1"
             if ok1 and new_player1:
@@ -206,7 +206,7 @@ class MenuLogic:
                 print(f'Você escolheu jogar com {choice2}')
                 player2_name = choice2
         elif ok1:
-            new_player2, ok2 = QInputDialog.getText(MainWindow, 'Novo Jogador', 'Digite o nome do novo jogador:')
+            new_player2, ok2 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player2 == "":
                 new_player2 = "Guest2"
             if ok2 and new_player2:

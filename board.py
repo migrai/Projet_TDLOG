@@ -1,6 +1,7 @@
 import sys
 import game
 import IA
+from PyQt5 import QtTest
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -199,6 +200,7 @@ class Board(QWidget):
             else:
                 self.setCursor(Qt.ForbiddenCursor)
             self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
+            QtTest.QTest.qWait(1000)
             if self.nb_players == 1 and is_player and self.diff_mod ==1 :
                 row, col = IA.big_square_greedy(list_possible_moves, self.last_square, self.square, self.nbr_square_in_bigsquare)
                 self.button_click(row, col, is_player = False)
