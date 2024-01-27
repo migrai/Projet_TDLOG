@@ -45,10 +45,6 @@ class GameWindow(QMainWindow):
     def show_main_menu(self, MainWindow):
         self.close()
         self.MainWindow.show()
-        #MainWindow.setupUi(self)
-        #self.setCentralWidget(MainWindow.centralwidget)
-        #self.center()
-        #self.show()
 
     def center(self):
         qr = self.frameGeometry()
