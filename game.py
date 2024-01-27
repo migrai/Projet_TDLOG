@@ -34,7 +34,6 @@ def current_big_square(last_square,table):
 def is_winner(board, player):
     '''Returns the bool : 1 if there is a winner, 0 otherwise'''
     board_edge_size = len(board)
-    print(len(board))
     return any(all(cell == player for cell in row) for row in board) or \
            any(all(board[row][col] == player for row in range(board_edge_size)) for col in range(board_edge_size)) or \
            all(board[row][row] == player for row in range(board_edge_size)) or \
