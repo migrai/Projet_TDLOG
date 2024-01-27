@@ -65,13 +65,6 @@ class Board_1D(QWidget):
         self.setWindowTitle("Morpion")
         self.show()
 
-    def resizeEvent(self, event):
-        # Override the resizeEvent method to handle window resize
-        for i in range(edge_size):
-            for j in range(edge_size):
-                btn = self.table[i][j]
-                self.update_font_size(btn)
-
     def update_font_size(self, button, times=1):
         # Update font size based on window width
         font_size = times * self.width() // 7
@@ -132,7 +125,7 @@ class Board_1D(QWidget):
                 Board_1D.update_score(self.current_player, self.player_history)
             if len(self.list_forbidden_squares)==edge_size**2 :
                 print("égalité")
-                self.show_egalite_message()
+                self.show_draw_message()
             list_possible_moves = self.possible_moves() # Update the list of possible moves for next turn
             print(list_possible_moves)
             print(self.list_forbidden_squares)
@@ -180,20 +173,20 @@ class Board_1D(QWidget):
         elif winner_message.clickedButton() == exit_button:
             self.boardcontainer.close()
 
-    def show_egalite_message(self):
-        egalite_message = QMessageBox()
-        egalite_message.setWindowTitle("Game Over")
-        egalite_message.setText(f"No player has won! It's a draw")
+    def show_draw_message(self):
+        draw_message = QMessageBox()
+        draw_message.setWindowTitle("Game Over")
+        draw_message.setText(f"No player has won! It's a draw")
 
-        back_to_menu_button = egalite_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
-        exit_button = egalite_message.addButton("Exit Game", QMessageBox.RejectRole)
+        back_to_menu_button = draw_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        exit_button = draw_message.addButton("Exit Game", QMessageBox.RejectRole)
 
-        egalite_message.exec_()
+        draw_message.exec_()
 
-        if egalite_message.clickedButton() == back_to_menu_button:
+        if draw_message.clickedButton() == back_to_menu_button:
             self.MainWindow.show()
             self.boardcontainer.close()
-        elif egalite_message.clickedButton() == exit_button:
+        elif draw_message.clickedButton() == exit_button:
             self.boardcontainer.close()
 
     def load_players(self):
