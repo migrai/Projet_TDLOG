@@ -1,6 +1,7 @@
 import sys
 import game
 import IA
+from PyQt5 import QtTest
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -18,8 +19,11 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt
 
+
+edge_size = 3 # number of squares in an edge of the board
+
 class Board_1D(QWidget):
-    def __init__(self,nb_players,player_list, MainWindow, boardcontainer, diff_mod):
+    def __init__(self, nb_players, player_list, MainWindow, boardcontainer, diff_mod):
         super().__init__()
         self.initUI()
         self.nb_players = nb_players
@@ -28,7 +32,6 @@ class Board_1D(QWidget):
         self.boardcontainer = boardcontainer
         self.diff_mod = diff_mod
         self.player_history = Board_1D.load_players(self)
-
     def initUI(self):
         grid = QGridLayout()
         self.setLayout(grid)
@@ -36,18 +39,18 @@ class Board_1D(QWidget):
         # Create the matrix to represent the board
         self.list_forbidden_squares = []
         self.last_square = None
-        self.table = [[None for i in range(3)] for j in range(3)]  # 3x3 space for buttons
-        self.square = [[None for i in range(3)] for j in range(3)] # liste des cases 
+        self.table = [[None for i in range(edge_size)] for j in range(edge_size)]  # edge_sizexedge_size space for buttons
+        self.square = [[None for i in range(edge_size)] for j in range(edge_size)] # liste of squares
         # Set a fixed size for the buttons and the window
         button_size = 300
-        self.setFixedSize(button_size * 3, button_size * 3)
+        self.setFixedSize(button_size * edge_size, button_size * edge_size)
 
         # Variable to track the current player (X or O)
         self.current_player = "X"
 
         # Create the buttons and add them to the matrix
-        for i in range(3):
-            for j in range(3):
+        for i in range(edge_size):
+            for j in range(edge_size):
                 btn = QPushButton("", self)
                 btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn.setFixedSize(button_size, button_size)
@@ -64,12 +67,12 @@ class Board_1D(QWidget):
 
     def resizeEvent(self, event):
         # Override the resizeEvent method to handle window resize
-        for i in range(3):
-            for j in range(3):
+        for i in range(edge_size):
+            for j in range(edge_size):
                 btn = self.table[i][j]
                 self.update_font_size(btn)
 
-    def update_font_size(self, button, times = 1): #fonction qui s
+    def update_font_size(self, button, times=1):
         # Update font size based on window width
         font_size = times * self.width() // 7
         font = button.font()
@@ -86,29 +89,29 @@ class Board_1D(QWidget):
 
     
     def disable_buttons(self): 
-        # Désactive les boutons aux coordonnées spécifiées
+        # Disable the buttons in the list of forbidden squares
         for row, col in self.list_forbidden_squares:
             self.table[row][col].setEnabled(False)
 
-    def enable_all_buttons(self):#active tous les boutons 
-        for row in range(3):
-            for col in range(3):
+    def enable_all_buttons(self): 
+        for row in range(edge_size):
+            for col in range(edge_size):
                 self.table[row][col].setEnabled(True)
 
-    def disable_all_buttons(self):#active tous les boutons 
-        for row in range(3):
-            for col in range(3):
+    def disable_all_buttons(self):
+        for row in range(edge_size):
+            for col in range(edge_size):
                 self.table[row][col].setEnabled(False)
    
     
-    def possible_moves(self): # retourne tous les coups possibles 
-        return ([(row,col) for row in range(3) for col in range(3) if not ((row, col) in self.list_forbidden_squares) ])
+    def possible_moves(self): # returns the list of all the possible moves 
+        return ([(row, col) for row in range(edge_size) for col in range(edge_size) 
+                 if not ((row, col) in self.list_forbidden_squares)])
 
     
 
-    def button_click(self, row, col, is_player = True): 
+    def button_click(self, row, col, is_player=True): 
         # Function to be called as the button is clicked
-        #if 
         list_possible_moves = self.possible_moves()
         print(list_possible_moves)
         if (row, col) in list_possible_moves: # Check if the button is empty
@@ -121,34 +124,40 @@ class Board_1D(QWidget):
             # Toggle player
             self.last_square = (row,col)
 
-            if game.is_winner(self.square,self.current_player):#vérifie si le jeu est fini 
+            if game.is_winner(self.square,self.current_player):# Check if the game is over
                 print("win")
                 self.disable_all_buttons()
                 print(self.current_player)  
                 self.show_winner_message()
                 Board_1D.update_score(self.current_player, self.player_history)
-            if len(self.list_forbidden_squares)==9 :
+            if len(self.list_forbidden_squares)==edge_size**2 :
                 print("égalité")
                 self.show_egalite_message()
-            list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
+            list_possible_moves = self.possible_moves() # Update the list of possible moves for next turn
             print(list_possible_moves)
             print(self.list_forbidden_squares)
             
-            if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
+            if self.current_player == "O": # Modifies the cursor depending on the current player (O for 'O', + for 'X')
                 self.setCursor(Qt.SizeAllCursor)
             else:
                 self.setCursor(Qt.ForbiddenCursor)
-            self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
-        if self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 and self.diff_mod == 1 :
+            self.current_player = "O" if self.current_player == "X" else "X" #End of the turn, make the other player the current one
+        # Make the AI play if necessary
+        if (self.nb_players == 1 and is_player and 
+            not game.is_winner(self.square, "X") and 
+                len(self.list_forbidden_squares) != edge_size**2):
+            self.disable_all_buttons()
+            QtTest.QTest.qWait(1000)
+            if self.diff_mod == 1: # Difficulty : Hard
+                row, col = IA.find_best_move_1D(self.square, list_possible_moves)            
+            elif self.diff_mod == 0: # Difficulty : Easy
+                row, col = IA.IA_random(self.square,list_possible_moves)
             
-            row, col = IA.find_best_move_1D(self.square, list_possible_moves)
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
-            self.button_click(row, col, is_player = False)
-        elif self.nb_players == 1 and is_player and not game.is_winner(self.square,"X")and len(self.list_forbidden_squares)!=9 and self.diff_mod == 0 :
-            row, col = IA.IA_random(self.square,list_possible_moves)
-            self.table[row][col].setText(self.current_player)
-            self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
+            # Enable buttons after the waiting time
+            self.enable_all_buttons()
+            self.disable_buttons()
             self.button_click(row, col, is_player = False)
 
     def show_winner_message(self):
@@ -211,5 +220,5 @@ class Board_1D(QWidget):
    
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    table = Board_1D(nb_players = 1)
+    table = Board_1D(nb_players=1)
     sys.exit(app.exec_())
