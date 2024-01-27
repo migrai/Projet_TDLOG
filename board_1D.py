@@ -136,8 +136,8 @@ class Board_1D(QWidget):
             list_possible_moves = self.possible_moves() # Update the list of possible moves for next turn
             print(list_possible_moves)
             print(self.list_forbidden_squares)
-            
-            if self.current_player == "O": # Modifies the cursor depending on the current player (O for 'O', + for 'X')
+            # Modifies the cursor depending on the current player (stop for 'O', + for 'X')
+            if self.current_player == "O": 
                 self.setCursor(Qt.SizeAllCursor)
             else:
                 self.setCursor(Qt.ForbiddenCursor)

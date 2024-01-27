@@ -76,43 +76,46 @@ class Board(QWidget):
         self.show()
 
     def update_font_size(self, button, times = 1): 
-        # Update font size based on window width
+        '''Update font size based on window width '''
         font_size = times * self.width() // 20
         font = button.font()
         font.setPointSize(font_size)
         button.setFont(font)
 
     def get_player_color(self):
-        # Return color based on the current player
+        '''Return color based on the current player'''
         return "red" if self.current_player == "X" else "blue"
 
     def get_block_color(self, row, col):
-        # Return alternating colors for the blocks
+        '''Return alternating colors for the blocks'''
         return "lightgray" if (row + col) % 2 == 0 else "gray"
     
     def disable_buttons(self): 
-        # Désactive les boutons aux coordonnées spécifiées
+        '''Disable buttons in the list of forbidden squares'''
         for row, col in self.list_forbidden_squares:
             self.table[row][col].setEnabled(False)
 
-    def disable_all_buttons(self): # rend inactif tous les boutons
+    def disable_all_buttons(self):
+        '''Disable the button of all small squares'''
         for row in range(edge_size_smls):
             for col in range(edge_size_smls):
                 self.table[row][col].setEnabled(False)  
 
     def enable_buttons(self):
-        # Enable all buttons in the list of possible moves
+        '''Enable all buttons in the list of possible moves'''
         list_possible_moves = self.possible_moves()
         for row, col in list_possible_moves:
             self.table[row][col].setEnabled(True)
 
-    def enable_all_buttons(self):#active tous les boutons 
+    def enable_all_buttons(self):
+        '''Enable the button of every small square'''
         for row in range(edge_size_smls):
             for col in range(edge_size_smls):
                 self.table[row][col].setEnabled(True)
  
     
-    def possible_moves(self): # retourne tous les coups possibles 
+    def possible_moves(self): 
+        '''List of the possible mobves for the current player'''
         return (
             [
                 (row,col) for row in range(edge_size_smls) for col in range(edge_size_smls)
@@ -123,7 +126,8 @@ class Board(QWidget):
             ]
         )
 
-    def create_big_button(self,x,y) : #créé la grosse case au point (x,y)
+    def create_big_button(self,x,y):
+        '''Create the big square button in coordinates (x,y)'''
         button_size = 295
         grid = self.layout()
         btn = QPushButton("", self)
@@ -139,11 +143,8 @@ class Board(QWidget):
         btn.setText(self.current_player)
     
     def button_click(self, row, col, is_player=True): 
-        # Function to be called as the button is clicked
-        #print(self.list_forbidden_squares)
-        list_possible_moves = self.possible_moves()
-        
-        #print(list_possible_moves,len(list_possible_moves))
+        '''Function to be called as the button is clicked'''
+        list_possible_moves = self.possible_moves() #refresh the list of possible moves
         if (row, col) in list_possible_moves: # Check if the button is empty
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(
@@ -152,14 +153,13 @@ class Board(QWidget):
             # Disable buttons associated with forbidden squares
             self.list_forbidden_squares.append((row,col))
             self.square[row][col] = self.current_player
-            #print(self.square)
 
             # Toggle player
-            self.last_square = (row,col)
+            self.last_square = (row, col)
             self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs]+=1
-            #print(game.current_big_square(self.last_square,self.square))
-            #print(game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player))
-            if game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player):#verifie si le grand carré a été gagné
+            if game.is_winner(
+                game.current_big_square(self.last_square, self.square),self.current_player
+                ): # Check if the big square has been won
                 self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs] = edge_size_smls
                 for i in range(edge_size_bigs):
                     for j in range(edge_size_bigs):
@@ -167,44 +167,44 @@ class Board(QWidget):
                             for k in range(edge_size_bigs):
                                 for l in range(edge_size_bigs):
                                     row2, col2 = edge_size_bigs*i+k,edge_size_bigs*j+l
-                                    if not ((row2,col2) in self.list_forbidden_squares):# ajoute toutes les cases restantes du carré gagné à la liste des coups interdits 
-                                        self.list_forbidden_squares.append((row2,col2))
+                                    # Add all empty squares of the won big square to the list of forbidden moves
+                                    if not ((row2, col2) in self.list_forbidden_squares):
+                                        self.list_forbidden_squares.append((row2, col2))
                                         
                 self.big_square_table[row//edge_size_bigs][col//edge_size_bigs]=self.current_player
-                #print(self.big_square_table)
                 self.create_big_button(row//edge_size_bigs,col//edge_size_bigs)
 
-                if game.is_winner(self.big_square_table,self.current_player):#vérifie si le jeu est fini 
+                if game.is_winner(self.big_square_table,self.current_player): # Check if a player won the game
                     self.disable_all_buttons()
                     print(self.current_player)  
                     self.show_winner_message()
                     Board.update_score(self.current_player, self.player_history)
-            list_possible_moves = self.possible_moves() #on modifie la liste des coups possibles pour le tour suivant
+            list_possible_moves = self.possible_moves() # Updating the list of possible moves for the next turn
             
-            if len(self.list_forbidden_squares)==81 :
-                print("égalité")
-                self.show_egalite_message()
+            if len(self.list_forbidden_squares) == edge_size_bigs**2:
+                self.show_draw_message()
 
-            for i in range(edge_size_smls): # donne aux cases leur couleur de départ (gris ou gris clair)
+            for i in range(edge_size_smls): # Coloring the empty squares of the board (gray or dark gray)
                 for j in range(edge_size_smls):
-                    if self.table[i][j].text() == "" : # case vide
+                    if self.table[i][j].text() == "" : # Empty square
                         block_color = self.get_block_color(i // edge_size_bigs, j // edge_size_bigs)
                         self.table[i][j].setStyleSheet(f"background-color: {block_color}; border: 1px solid black"
                 )
                         
-            for (i,j) in list_possible_moves : # colorie les coups possubles en jaune
+            for (i,j) in list_possible_moves : # Coloring possible moves in yellow
                 self.table[i][j].setStyleSheet(f"background-color: {'yellow'}; border: 1px solid black")
             self.disable_buttons()
 
-            if self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs] ==edge_size_smls and not game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player): 
+            if (self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs] == edge_size_smls and
+                not game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player)): 
                 self.color_pat_big_square(row//edge_size_bigs,col//edge_size_bigs)
-
-            if self.current_player == "O": # modifie le curseur pour indiquer quel joueur doit jouer (un 0 pour le joueur O et un + pour le joueur X)
+            # Edit cursor depending on the player (stop for 'O', + for 'X')
+            if self.current_player == "O": 
                 self.setCursor(Qt.SizeAllCursor)
 
             else:
                 self.setCursor(Qt.ForbiddenCursor)
-            self.current_player = "O" if self.current_player == "X" else "X" #fin du tour, donne la main au joueur suivant
+            self.current_player = "O" if self.current_player == "X" else "X" # End of the turn, edit current player
             
             # Make the AI play if necessary
             if self.nb_players == 1 and is_player:
@@ -221,23 +221,15 @@ class Board(QWidget):
                 self.button_click(row, col, is_player = False)
             
     def color_pat_big_square(self,x,y):
+        '''Colors the big square in black if it is tied'''
         button_size = 295
         grid = self.layout()
         btn = QPushButton("", self)
         btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         btn.setFixedSize(button_size, button_size)
-        grid.addWidget(btn, x*edge_size_bigs , edge_size_bigs*y)
+        grid.addWidget(btn, x*edge_size_bigs, edge_size_bigs*y)
         btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
-        self.big_square_table[x][y]="égalité"
-            
-            
-
-    def update_ui(self):
-        # Mettez à jour l'interface utilisateur en fonction de l'état du jeu
-        # Cela peut inclure la mise à jour des boutons, l'affichage du joueur actuel, etc.
-        #l =
-        
-        pass
+        self.big_square_table[x][y]="draw"
 
     def show_winner_message(self):
         if self.current_player == "X":
@@ -259,20 +251,20 @@ class Board(QWidget):
         elif winner_message.clickedButton() == exit_button:
             self.boardcontainer.close()
 
-    def show_egalite_message(self):
-        egalite_message = QMessageBox()
-        egalite_message.setWindowTitle("Game Over")
-        egalite_message.setText(f"No player has won! It's a draw")
+    def show_draw_message(self):
+        draw_message = QMessageBox()
+        draw_message.setWindowTitle("Game Over")
+        draw_message.setText(f"No player has won! It's a draw")
 
-        back_to_menu_button = egalite_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
-        exit_button = egalite_message.addButton("Exit Game", QMessageBox.RejectRole)
+        back_to_menu_button = draw_message.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        exit_button = draw_message.addButton("Exit Game", QMessageBox.RejectRole)
 
-        egalite_message.exec_()
+        draw_message.exec_()
 
-        if egalite_message.clickedButton() == back_to_menu_button:
+        if draw_message.clickedButton() == back_to_menu_button:
             self.MainWindow.show()
             self.boardcontainer.close()
-        elif egalite_message.clickedButton() == exit_button:
+        elif draw_message.clickedButton() == exit_button:
             self.boardcontainer.close()
 
     def load_players(self):
