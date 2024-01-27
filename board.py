@@ -18,9 +18,6 @@ from PyQt5.QtWidgets import (
 )
 
 from PyQt5.QtCore import Qt
-
-edge_size_smls = 9 # number of small squares in an edge of the board
-edge_size_bigs = 3 # number of big squares in an edge of the board
 class Board(QWidget):
     def __init__(self, nb_players, player_list, MainWindow, boardcontainer, diff_mod):
         super().__init__()
@@ -37,25 +34,25 @@ class Board(QWidget):
         self.setLayout(grid)
         self.setCursor(Qt.SizeAllCursor)
         # Create the matrix to represent the board of small squares
-        self.table = [[None] * edge_size_smls for _ in range(edge_size_smls)]
+        self.table = [[None] * game.edge_size_smls for _ in range(game.edge_size_smls)]
         # Create the 2D board of the states of the small squares ('X', 'O' or ' ')
-        self.square = [[" "] * edge_size_smls for _ in range(edge_size_smls)]
+        self.square = [[" "] * game.edge_size_smls for _ in range(game.edge_size_smls)]
         self.list_forbidden_squares = [] # list of the unavailable squares 
         self.last_square = None
-        self.big_square_table = [[None for i in range(edge_size_bigs)] for j in range(edge_size_bigs)]  # 3x3 of big squares
+        self.big_square_table = [[None for i in range(game.edge_size_bigs)] for j in range(game.edge_size_bigs)]  # 3x3 of big squares
         # 2D board that gives the number of occupied squares in the big squares
-        self.nbr_square_in_bigsquare = [[0 for i in range(edge_size_bigs)] 
-                                        for j in range(edge_size_bigs)] 
+        self.nbr_square_in_bigsquare = [[0 for i in range(game.edge_size_bigs)] 
+                                        for j in range(game.edge_size_bigs)] 
         # Set a fixed size for the buttons and the window
         button_size = 100
-        self.setFixedSize(button_size * edge_size_smls, button_size * edge_size_smls)
+        self.setFixedSize(button_size * game.edge_size_smls, button_size * game.edge_size_smls)
 
         # Variable to track the current player (X or O)
         self.current_player = "X"
 
         # Create the buttons and add them to the matrix
-        for i in range(edge_size_smls):
-            for j in range(edge_size_smls):
+        for i in range(game.edge_size_smls):
+            for j in range(game.edge_size_smls):
                 btn = QPushButton("", self)
                 btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn.setFixedSize(button_size, button_size)
@@ -67,7 +64,7 @@ class Board(QWidget):
                 self.update_font_size(btn)
 
                 # Set background color based on the block position
-                block_color = self.get_block_color(i // edge_size_bigs, j // edge_size_bigs)
+                block_color = self.get_block_color(i // game.edge_size_bigs, j // game.edge_size_bigs)
                 btn.setStyleSheet(
                     f"background-color: {block_color}; border: 1px solid black"
                 )
@@ -97,8 +94,8 @@ class Board(QWidget):
 
     def disable_all_buttons(self):
         '''Disable the button of all small squares'''
-        for row in range(edge_size_smls):
-            for col in range(edge_size_smls):
+        for row in range(game.edge_size_smls):
+            for col in range(game.edge_size_smls):
                 self.table[row][col].setEnabled(False)  
 
     def enable_buttons(self):
@@ -109,8 +106,8 @@ class Board(QWidget):
 
     def enable_all_buttons(self):
         '''Enable the button of every small square'''
-        for row in range(edge_size_smls):
-            for col in range(edge_size_smls):
+        for row in range(game.edge_size_smls):
+            for col in range(game.edge_size_smls):
                 self.table[row][col].setEnabled(True)
  
     
@@ -118,7 +115,7 @@ class Board(QWidget):
         '''List of the possible mobves for the current player'''
         return (
             [
-                (row,col) for row in range(edge_size_smls) for col in range(edge_size_smls)
+                (row,col) for row in range(game.edge_size_smls) for col in range(game.edge_size_smls)
                 if not (
                     (row, col) in self.list_forbidden_squares
                     or (row,col) in game.forbidden_moves_for_current_player(self.last_square,self.big_square_table)
@@ -133,9 +130,9 @@ class Board(QWidget):
         btn = QPushButton("", self)
         btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         btn.setFixedSize(button_size, button_size)
-        grid.addWidget(btn, x*edge_size_bigs , edge_size_bigs*y)
+        grid.addWidget(btn, x*game.edge_size_bigs , game.edge_size_bigs*y)
         # Increase the font size for larger buttons
-        self.update_font_size(btn,times = edge_size_bigs)
+        self.update_font_size(btn,times = game.edge_size_bigs)
 
         # Set background color based on the block position
         block_color = self.get_player_color()
@@ -156,23 +153,21 @@ class Board(QWidget):
 
             # Toggle player
             self.last_square = (row, col)
-            self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs]+=1
-            if game.is_winner(
-                game.current_big_square(self.last_square, self.square),self.current_player
-                ): # Check if the big square has been won
-                self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs] = edge_size_smls
-                for i in range(edge_size_bigs):
-                    for j in range(edge_size_bigs):
-                        if i == row//edge_size_bigs and j == col//edge_size_bigs:
-                            for k in range(edge_size_bigs):
-                                for l in range(edge_size_bigs):
-                                    row2, col2 = edge_size_bigs*i+k,edge_size_bigs*j+l
+            self.nbr_square_in_bigsquare[row//game.edge_size_bigs][col//game.edge_size_bigs]+=1
+            if game.is_winner(game.current_big_square(self.last_square, self.square),self.current_player): # Check if the big square has been won
+                self.nbr_square_in_bigsquare[row//game.edge_size_bigs][col//game.edge_size_bigs] = game.edge_size_smls
+                for i in range(game.edge_size_bigs):
+                    for j in range(game.edge_size_bigs):
+                        if i == row//game.edge_size_bigs and j == col//game.edge_size_bigs:
+                            for k in range(game.edge_size_bigs):
+                                for l in range(game.edge_size_bigs):
+                                    row2, col2 = game.edge_size_bigs*i+k,game.edge_size_bigs*j+l
                                     # Add all empty squares of the won big square to the list of forbidden moves
                                     if not ((row2, col2) in self.list_forbidden_squares):
                                         self.list_forbidden_squares.append((row2, col2))
                                         
-                self.big_square_table[row//edge_size_bigs][col//edge_size_bigs]=self.current_player
-                self.create_big_button(row//edge_size_bigs,col//edge_size_bigs)
+                self.big_square_table[row//game.edge_size_bigs][col//game.edge_size_bigs]=self.current_player
+                self.create_big_button(row//game.edge_size_bigs,col//game.edge_size_bigs)
 
                 if game.is_winner(self.big_square_table,self.current_player): # Check if a player won the game
                     self.disable_all_buttons()
@@ -181,23 +176,23 @@ class Board(QWidget):
                     Board.update_score(self.current_player, self.player_history)
             list_possible_moves = self.possible_moves() # Updating the list of possible moves for the next turn
             
-            if len(self.list_forbidden_squares) == edge_size_bigs**2:
+            if len(self.list_forbidden_squares) == game.edge_size_bigs**2:
                 self.show_draw_message()
 
-            for i in range(edge_size_smls): # Coloring the empty squares of the board (gray or dark gray)
-                for j in range(edge_size_smls):
+            for i in range(game.edge_size_smls): # Coloring the empty squares of the board (gray or dark gray)
+                for j in range(game.edge_size_smls):
                     if self.table[i][j].text() == "" : # Empty square
-                        block_color = self.get_block_color(i // edge_size_bigs, j // edge_size_bigs)
+                        block_color = self.get_block_color(i // game.edge_size_bigs, j // game.edge_size_bigs)
                         self.table[i][j].setStyleSheet(f"background-color: {block_color}; border: 1px solid black"
                 )
                         
-            for (i,j) in list_possible_moves : # Coloring possible moves in yellow
+            for (i,j) in list_possible_moves: # Coloring possible moves in yellow
                 self.table[i][j].setStyleSheet(f"background-color: {'yellow'}; border: 1px solid black")
             self.disable_buttons()
 
-            if (self.nbr_square_in_bigsquare[row//edge_size_bigs][col//edge_size_bigs] == edge_size_smls and
+            if (self.nbr_square_in_bigsquare[row//game.edge_size_bigs][col//game.edge_size_bigs] == game.edge_size_smls and
                 not game.is_winner(game.current_big_square(self.last_square,self.square),self.current_player)): 
-                self.color_pat_big_square(row//edge_size_bigs,col//edge_size_bigs)
+                self.color_pat_big_square(row//game.edge_size_bigs,col//game.edge_size_bigs)
             # Edit cursor depending on the player (stop for 'O', + for 'X')
             if self.current_player == "O": 
                 self.setCursor(Qt.SizeAllCursor)
@@ -227,7 +222,7 @@ class Board(QWidget):
         btn = QPushButton("", self)
         btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         btn.setFixedSize(button_size, button_size)
-        grid.addWidget(btn, x*edge_size_bigs, edge_size_bigs*y)
+        grid.addWidget(btn, x*game.edge_size_bigs, game.edge_size_bigs*y)
         btn.setStyleSheet(f"background-color: {'black'}; border: 1px solid black")
         self.big_square_table[x][y]="draw"
 

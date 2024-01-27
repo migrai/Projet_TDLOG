@@ -19,9 +19,6 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt
 
-
-edge_size = 3 # number of squares in an edge of the board
-
 class Board_1D(QWidget):
     def __init__(self, nb_players, player_list, MainWindow, boardcontainer, diff_mod):
         super().__init__()
@@ -39,18 +36,18 @@ class Board_1D(QWidget):
         # Create the matrix to represent the board
         self.list_forbidden_squares = []
         self.last_square = None
-        self.table = [[None for i in range(edge_size)] for j in range(edge_size)]  # edge_sizexedge_size space for buttons
-        self.square = [[None for i in range(edge_size)] for j in range(edge_size)] # liste of squares
+        self.table = [[None for i in range(game.edge_size)] for j in range(game.edge_size)]  # edge_sizexedge_size space for buttons
+        self.square = [[None for i in range(game.edge_size)] for j in range(game.edge_size)] # liste of squares
         # Set a fixed size for the buttons and the window
         button_size = 300
-        self.setFixedSize(button_size * edge_size, button_size * edge_size)
+        self.setFixedSize(button_size * game.edge_size, button_size * game.edge_size)
 
         # Variable to track the current player (X or O)
         self.current_player = "X"
 
         # Create the buttons and add them to the matrix
-        for i in range(edge_size):
-            for j in range(edge_size):
+        for i in range(game.edge_size):
+            for j in range(game.edge_size):
                 btn = QPushButton("", self)
                 btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn.setFixedSize(button_size, button_size)
@@ -88,20 +85,20 @@ class Board_1D(QWidget):
 
     def enable_all_buttons(self):
         '''Enable all buttons of the board'''
-        for row in range(edge_size):
-            for col in range(edge_size):
+        for row in range(game.edge_size):
+            for col in range(game.edge_size):
                 self.table[row][col].setEnabled(True)
 
     def disable_all_buttons(self):
         '''Disable all buttons of the board'''
-        for row in range(edge_size):
-            for col in range(edge_size):
+        for row in range(game.edge_size):
+            for col in range(game.edge_size):
                 self.table[row][col].setEnabled(False)
    
     
     def possible_moves(self): 
         '''Returns the list of all the possible moves '''
-        return ([(row, col) for row in range(edge_size) for col in range(edge_size) 
+        return ([(row, col) for row in range(game.edge_size) for col in range(game.edge_size) 
                  if not ((row, col) in self.list_forbidden_squares)])
 
     
@@ -126,7 +123,7 @@ class Board_1D(QWidget):
                 print(self.current_player)  
                 self.show_winner_message()
                 Board_1D.update_score(self.current_player, self.player_history)
-            if len(self.list_forbidden_squares)==edge_size**2 :
+            if len(self.list_forbidden_squares)==game.edge_size**2 :
                 print("égalité")
                 self.show_draw_message()
             list_possible_moves = self.possible_moves() # Update the list of possible moves for next turn
@@ -141,7 +138,7 @@ class Board_1D(QWidget):
         # Make the AI play if necessary
         if (self.nb_players == 1 and is_player and 
             not game.is_winner(self.square, "X") and 
-                len(self.list_forbidden_squares) != edge_size**2):
+                len(self.list_forbidden_squares) != game.edge_size**2):
             self.disable_all_buttons()
             QtTest.QTest.qWait(1000)
             if self.diff_mod == 1: # Difficulty : Hard
