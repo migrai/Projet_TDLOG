@@ -88,6 +88,7 @@ class Ui_MainWindow(object):
         self.vertical_layout = vertical_layout
 
     def retranslateUi(self, MainWindow):
+        ''''''
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Morpion"))
         self.label.setText(_translate("MainWindow", "Main Menu"))
@@ -113,6 +114,7 @@ class Ui_MainWindow(object):
         return self.original_geometry
     
     def set_diff(self, diff):
+        '''Sets the difficulty'''
         self.difficultyMod = diff
         print(self.difficultyMod)
         return self.difficultyMod
@@ -133,7 +135,7 @@ class Ui_MainWindow(object):
         if new_player in self.player_history:
             pass
         else:
-            # Se o jogador não existe, adiciona o novo jogador
+            # If the player doesn't exist, add the new player.
             self.player_history[new_player] = new_score
 
         with open('players.txt', 'w') as file:
@@ -167,8 +169,6 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    
-    #table = GameWindow(ui)
 
     MainWindow.show()
     sys.exit(app.exec_())
