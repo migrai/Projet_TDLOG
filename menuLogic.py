@@ -147,15 +147,15 @@ class MenuLogic:
         choice, ok1 = QInputDialog.getItem(MainWindow, 'Choose a player', 'Select an existing player 1 ?', self.player_history.keys(), 0, False)
 
         if ok1:
-            print(f'Você escolheu jogar com {choice}')
+            print(f'You chose to play as {choice}')
             player1_name = choice
-            # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
+            # Add here the logic to start the game with the chosen player.
         else:
             new_player1, ok1 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player1 == "":
                 new_player1 = "Guest1"
             if ok1 and new_player1:
-                print(f'Você criou um novo jogador: {new_player1}')
+                print(f'You have created a new player: {new_player1}')
                 self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
                 self.save_players(new_player1, 0)
                 player1_name = new_player1
@@ -179,7 +179,7 @@ class MenuLogic:
         choice, ok1 = QInputDialog.getItem(MainWindow, 'Choose a player', 'Select an existing player 1 ?', self.player_history.keys(), 0, False)
 
         if ok1:
-            print(f'Você escolheu jogar com {choice}')
+            print(f'You chose to play as {choice}')
             player1_name = choice
             # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
         else:
@@ -187,7 +187,7 @@ class MenuLogic:
             if new_player1 == "":
                 new_player1 = "Guest1"
             if ok1 and new_player1:
-                print(f'Você criou um novo jogador: {new_player1}')
+                print(f': {new_player1}')
                 self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
                 self.save_players(new_player1, 0)
                 player1_name = new_player1
@@ -203,14 +203,14 @@ class MenuLogic:
 
         if ok2 and ok1:
             if choice2:
-                print(f'Você escolheu jogar com {choice2}')
+                print('You chose to play as {choice2}')
                 player2_name = choice2
         elif ok1:
             new_player2, ok2 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player2 == "":
                 new_player2 = "Guest2"
             if ok2 and new_player2:
-                print(f'Você criou um novo jogador: {new_player2}')
+                print(f'You have created a new player: {new_player2}')
                 self.save_players(new_player2, 0)
                 player2_name = new_player2
 
