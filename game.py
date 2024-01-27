@@ -4,7 +4,7 @@ edge_size_bigs = 3 # number of big squares in an edge of the board
 edge_size_in_bigs = edge_size_smls//edge_size_bigs # number of small squares in an edge of a big square
 
 def forbidden_moves_for_current_player(last_square, big_square_table):
-    #Returns the list of the forbidden moves in the big_square_table, depending of the last move played
+    '''Returns the list of the forbidden moves in the big_square_table, depending of the last move played'''
     if last_square == None:
         return []
     x, y = last_square[0] % edge_size_bigs, last_square[1] % edge_size_bigs  # coords of the big square which last player points at
@@ -21,7 +21,7 @@ def forbidden_moves_for_current_player(last_square, big_square_table):
     return forbidden
 
 def current_big_square(last_square,table): 
-    #Returns the state of the squares in the current big square
+    '''Returns the state of the squares in the current big square'''
     x, y = last_square[0] // edge_size_bigs, last_square[1] // edge_size_bigs  # coords of the big square which last player points at
     square = []
     for row_in_bigs in range(edge_size_in_bigs):
