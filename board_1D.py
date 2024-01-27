@@ -144,7 +144,7 @@ class Board_1D(QWidget):
             if self.diff_mod == 1: # Difficulty : Hard
                 row, col = IA.find_best_move_1D(self.square, list_possible_moves)            
             elif self.diff_mod == 0: # Difficulty : Easy
-                row, col = IA.IA_random(self.square,list_possible_moves)
+                row, col = IA.IA_random(list_possible_moves)
             
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")

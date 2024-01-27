@@ -3,7 +3,8 @@ import game
 
 ### EASY LEVEL (1D, 2D)
 
-def IA_random(table, list_possible_moves): #marche pour les deux dimensions possibles
+def IA_random(list_possible_moves):
+    '''Returns a random move among the possible ones'''
     (row,col) = list_possible_moves[random.randint(0, len(list_possible_moves)-1)]
     return (row,col)
 

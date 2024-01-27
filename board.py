@@ -210,7 +210,7 @@ class Board(QWidget):
                 if self.diff_mod == 1: # Hard mode
                     row, col = IA.big_square_greedy(list_possible_moves, self.last_square, self.square, self.nbr_square_in_bigsquare)
                 elif self.diff_mod == 0: # Easy mode
-                    row, col = IA.IA_random(self.square, list_possible_moves)
+                    row, col = IA.IA_random(list_possible_moves)
                 
                 self.enable_all_buttons() # Enable buttons after the waiting time
                 self.button_click(row, col, is_player = False)
