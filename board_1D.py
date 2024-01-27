@@ -66,45 +66,48 @@ class Board_1D(QWidget):
         self.show()
 
     def update_font_size(self, button, times=1):
-        # Update font size based on window width
+        '''Update font size based on window width'''
         font_size = times * self.width() // 7
         font = button.font()
         font.setPointSize(font_size)
         button.setFont(font)
 
     def get_player_color(self):
-        # Return color based on the current player
+        '''Return color based on the current player'''
         return "red" if self.current_player == "X" else "blue"
 
     def get_block_color(self, row, col):
-        # Return alternating colors for the blocks
+        '''Return alternating colors for the blocks'''
         return "lightgray" if (row + col) % 2 == 0 else "gray"
 
     
-    def disable_buttons(self): 
-        # Disable the buttons in the list of forbidden squares
+    def disable_buttons(self):
+        '''Disable the buttons in the list of forbidden squares'''
         for row, col in self.list_forbidden_squares:
             self.table[row][col].setEnabled(False)
 
-    def enable_all_buttons(self): 
+    def enable_all_buttons(self):
+        '''Enable all buttons of the board'''
         for row in range(edge_size):
             for col in range(edge_size):
                 self.table[row][col].setEnabled(True)
 
     def disable_all_buttons(self):
+        '''Disable all buttons of the board'''
         for row in range(edge_size):
             for col in range(edge_size):
                 self.table[row][col].setEnabled(False)
    
     
-    def possible_moves(self): # returns the list of all the possible moves 
+    def possible_moves(self): 
+        '''Returns the list of all the possible moves '''
         return ([(row, col) for row in range(edge_size) for col in range(edge_size) 
                  if not ((row, col) in self.list_forbidden_squares)])
 
     
 
     def button_click(self, row, col, is_player=True): 
-        # Function to be called as the button is clicked
+        '''Function to be called as the button is clicked'''
         list_possible_moves = self.possible_moves()
         print(list_possible_moves)
         if (row, col) in list_possible_moves: # Check if the button is empty
