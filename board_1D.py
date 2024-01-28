@@ -106,7 +106,6 @@ class Board_1D(QWidget):
     def button_click(self, row, col, is_player=True): 
         '''Function to be called as the button is clicked'''
         list_possible_moves = self.possible_moves()
-        print(list_possible_moves)
         if (row, col) in list_possible_moves: # Check if the button is empty
             self.table[row][col].setText(self.current_player)
             self.table[row][col].setStyleSheet(f"background-color: {self.get_player_color()}")
@@ -118,17 +117,12 @@ class Board_1D(QWidget):
             self.last_square = (row,col)
 
             if game.is_winner(self.square,self.current_player):# Check if the game is over
-                print("win")
                 self.disable_all_buttons()
-                print(self.current_player)  
                 self.show_winner_message()
                 Board_1D.update_score(self.current_player, self.player_history)
-            if len(self.list_forbidden_squares)==game.edge_size**2 :
-                print("égalité")
+            elif len(self.list_forbidden_squares)==game.edge_size**2 :
                 self.show_draw_message()
             list_possible_moves = self.possible_moves() # Update the list of possible moves for next turn
-            print(list_possible_moves)
-            print(self.list_forbidden_squares)
             # Modifies the cursor depending on the current player (stop for 'O', + for 'X')
             if self.current_player == "O": 
                 self.setCursor(Qt.SizeAllCursor)

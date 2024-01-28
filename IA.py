@@ -80,15 +80,15 @@ def win_instantly(board, possible_moves, player):
         return False
     
 def find_best_move_big_square(board,possible_moves):
-    '''Returns the best move to win the big square using minimax algorithm in morpion1D.'''
+    '''Returns the best move to win the big square defined by board using minimax algorithm in morpion1D.'''
 
-    # It's required to check the one-movers, because the minimax algorithm
+    # It's required to check the one-movers
         # Step 1 : can I win in one move ?
     if win_instantly(board, possible_moves, 'X') != False:
-        return win_instantly(board, possible_moves)
+        return win_instantly(board, possible_moves, 'X')
     
     # Step 2 : can I lose in one move ?
-    if win_instantly(board, possible_moves, 'O') != False:
+    elif win_instantly(board, possible_moves, 'O') != False:
         return win_instantly(board, possible_moves, 'O')
 
     # Step 3 : else, I find the best move in the big square I can play in.
@@ -115,18 +115,28 @@ def big_square_greedy(possible_moves, last_square, board_state, nbr_square_in_bi
     else : # Full big square
         # We check all the big squares to see if one of them is winnable in one move
         list_greedy_moves = []
+        list_losing_moves = []
         for i_big in range(game.edge_size_bigs):
             for j_big in range(game.edge_size_bigs):
                 if nbr_square_in_bigsquare[i_big][j_big] < game.edge_size_in_bigs**2:
                     possible_moves_in_big_square = game.possible_moves_in_big_square(possible_moves,i_big,j_big)
                     board_big_square = game.current_big_square_state(board_state,i_big,j_big)
-                    if win_instantly(board_big_square, possible_moves_in_big_square) != False:
-                        move_0_2 = win_instantly(board_big_square, possible_moves_in_big_square) # coords in [0,edge_size_in_bigs]x[0,edge_size_in_bigs]
+                    # check if the AI can win instantly
+                    if win_instantly(board_big_square, possible_moves_in_big_square, 'O') != False:
+                        move_0_2 = win_instantly(board_big_square, possible_moves_in_big_square, 'O') # coords in [0,edge_size_in_bigs]x[0,edge_size_in_bigs]
                         move_0_8 = (move_0_2[0]+game.edge_size_in_bigs*i_big, move_0_2[1]+game.edge_size_in_bigs*j_big)
                         list_greedy_moves.append(move_0_8)
+                    # check if opponent can win instantly
+                    elif win_instantly(board_big_square, possible_moves_in_big_square, 'X') != False:
+                        move_0_2 = win_instantly(board_big_square, possible_moves_in_big_square, 'X') # coords in [0,edge_size_in_bigs]x[0,edge_size_in_bigs]
+                        move_0_8 = (move_0_2[0]+game.edge_size_in_bigs*i_big, move_0_2[1]+game.edge_size_in_bigs*j_big)
+                        list_losing_moves.append(move_0_8)  
+
         if len(list_greedy_moves) > 0: # There is indeed a winning move
-            return list_greedy_moves[random.randint(0,len(list_greedy_moves)-1)] # on prend un move gagnant au hasard
-        return IA_random(board_state, possible_moves)
+            return list_greedy_moves[random.randint(0,len(list_greedy_moves)-1)] # We pick a random winning move
+        elif len(list_losing_moves) > 0: # there is indeed a losing move
+            return list_losing_moves[random.randint(0,len(list_losing_moves)-1)] # We pick a random losing move to block it
+        return IA_random(possible_moves) # pick a random move if no winning one
         
 ### HARD MODE 2D : Work in progress
     

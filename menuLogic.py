@@ -16,7 +16,6 @@ class MenuLogic:
         nb_players = 1
         # Implement logic for one player (IA)
         ok1 = MenuLogic.name_player(self, MainWindow, player_history)
-        print(ok1)
         if ok1:
             self.game_window = GameWindow(self, nb_players, type_jeu, self.player_list, MainWindow, diff_mod)
             self.game_window.show()
@@ -156,12 +155,11 @@ class MenuLogic:
                 new_player1 = "Guest1"
             if ok1 and new_player1:
                 print(f'You have created a new player: {new_player1}')
-                self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
+                self.player_history[new_player1] = 0  # Add a new player with score zero
                 self.save_players(new_player1, 0)
                 player1_name = new_player1
         if ok1:
-            # Now we can use player1_name and player2_name as needed
-            print(f"Player 1's name: {player1_name}")
+            # Now we can use player1_name as needed
             self.player_list = [player1_name, "IA"]
         
         return ok1
@@ -181,14 +179,13 @@ class MenuLogic:
         if ok1:
             print(f'You chose to play as {choice}')
             player1_name = choice
-            # Adicione aqui a lógica para iniciar o jogo com o jogador escolhido
+            # Add here the logic for a new player
         else:
             new_player1, ok1 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
             if new_player1 == "":
                 new_player1 = "Guest1"
             if ok1 and new_player1:
-                print(f': {new_player1}')
-                self.player_history[new_player1] = 0  # Adiciona o novo jogador com score inicial zero
+                self.player_history[new_player1] = 0  # Add a new player with initial score zero
                 self.save_players(new_player1, 0)
                 player1_name = new_player1
         if ok1:
@@ -203,7 +200,7 @@ class MenuLogic:
 
         if ok2 and ok1:
             if choice2:
-                print('You chose to play as {choice2}')
+                print(f'You chose to play as {choice2}')
                 player2_name = choice2
         elif ok1:
             new_player2, ok2 = QInputDialog.getText(MainWindow, 'New player', "Type the new player's name:")
@@ -218,8 +215,6 @@ class MenuLogic:
         # Check if both players provided names
         if ok1 and ok2:
             # Now we can use player1_name and player2_name as needed
-            print(f"Player 1's name: {player1_name}")
-            print(f"Player 2's name: {player2_name}")
             self.player_list = [player1_name, player2_name]
             return [ok1, ok2]
         else:

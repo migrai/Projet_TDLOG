@@ -1,4 +1,4 @@
-Guest1:6
+Guest1:8
 Guest2:0
 no:0
 go:0

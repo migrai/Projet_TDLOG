@@ -116,7 +116,6 @@ class Ui_MainWindow(object):
     def set_diff(self, diff):
         '''Sets the difficulty'''
         self.difficultyMod = diff
-        print(self.difficultyMod)
         return self.difficultyMod
     
     def load_players(self):

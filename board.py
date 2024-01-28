@@ -171,13 +171,13 @@ class Board(QWidget):
 
                 if game.is_winner(self.big_square_table,self.current_player): # Check if a player won the game
                     self.disable_all_buttons()
-                    print(self.current_player)  
                     self.show_winner_message()
                     Board.update_score(self.current_player, self.player_history)
-            list_possible_moves = self.possible_moves() # Updating the list of possible moves for the next turn
             
-            if len(self.list_forbidden_squares) == game.edge_size_smls**2:
+            elif len(self.list_forbidden_squares) == game.edge_size_smls**2:
                 self.show_draw_message()
+
+            list_possible_moves = self.possible_moves() # Updating the list of possible moves for the next turn
 
             for i in range(game.edge_size_smls): # Coloring the empty squares of the board (gray or dark gray)
                 for j in range(game.edge_size_smls):
