@@ -176,7 +176,7 @@ class Board(QWidget):
                     Board.update_score(self.current_player, self.player_history)
             list_possible_moves = self.possible_moves() # Updating the list of possible moves for the next turn
             
-            if len(self.list_forbidden_squares) == game.edge_size_bigs**2:
+            if len(self.list_forbidden_squares) == game.edge_size_smls**2:
                 self.show_draw_message()
 
             for i in range(game.edge_size_smls): # Coloring the empty squares of the board (gray or dark gray)
